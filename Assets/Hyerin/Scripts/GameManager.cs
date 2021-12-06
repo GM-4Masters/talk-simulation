@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     public int[] boundary = { 30, 60, 90 }; // 에피소드 분기점
 
     public enum ENDING { BAD1, BAD2, BAD3, NORMAL, }
-    public enum AUDIO { MAIN, INGAME, BAD, NORMAL }
+    public enum AUDIO { MAIN, INGAME, BAD, NORMAL, NOTIFICATION }
     public enum SCENE { MAIN, CHATLIST, INGAME, ENDING, }
 
     public static GameManager Instance
@@ -87,6 +87,7 @@ public class GameManager : MonoBehaviour
             // 다음 채팅 출력
             if (currentScene == SCENE.CHATLIST)
             {
+                if (episodeIndex == 0) PlayAnotherAudio(AUDIO.NOTIFICATION);
                 chatListUI.RefreshChat(currentTextData);
             }
             else if (currentScene == SCENE.INGAME)
@@ -135,6 +136,11 @@ public class GameManager : MonoBehaviour
     {
         ChangeScene(SCENE.ENDING);
     }
+
+    public int GetEpisodeIndex()
+    {
+        return episodeIndex;
+    }
     
     public ENDING GetEndingType()
     {
@@ -142,7 +148,7 @@ public class GameManager : MonoBehaviour
     }
 
     // 엔딩조건 충족 시 현재 에피소드 번호를 엔딩번호로 지정
-    public void SetEnding()
+    public void ChangeEnding()
     {
         ending = (ENDING)episodeIndex;
     }
@@ -192,5 +198,10 @@ public class GameManager : MonoBehaviour
         //if (audioSource.isPlaying) audioSource.Stop();
         //audioSource.clip = audioClip[(int)audio];
         //audioSource.Play();
+    }
+    
+    private void PlayAnotherAudio(AUDIO audio)
+    {
+
     }
 }

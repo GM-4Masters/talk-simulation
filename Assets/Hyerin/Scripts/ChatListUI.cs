@@ -35,7 +35,7 @@ public class ChatListUI : MonoBehaviour
 
     public void RefreshChat(ChatData td)
     {
-        nameTxt[0].text = td.getCharacterIndex().ToString();
+        nameTxt[0].text = td.GetName();
         previewTxt[0].text = td.GetText();
         timeTxt[0].text = td.GetTime().ToString();  // 시간 형식에 맞게 바꾸어 출력할 것
         dateTxt[0].text = td.GetDate().ToString();  // 날짜 형식에 맞게 바꾸어 출력할 것

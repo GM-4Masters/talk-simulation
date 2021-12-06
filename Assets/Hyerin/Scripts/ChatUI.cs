@@ -6,7 +6,10 @@ using UnityEngine.UI;
 public class ChatUI : MonoBehaviour
 {
     [SerializeField] private Button exitBtn;
-    [SerializeField] private Button[] tempEndingBtn = new Button[3];
+
+    public GameObject playerBubblePrefab, npcBubblePrefab;
+    public RectTransform contentRect;
+    public Scrollbar scrollBar;
 
     private void Awake()
     {
@@ -14,18 +17,43 @@ public class ChatUI : MonoBehaviour
 
     public void RefreshChat(ChatData td)
     {
-
+        switch (td.GetMemberIndex())
+        {
+            case 0:
+                // 시스템
+                break;
+            case 1:
+                // 나
+                Chat(true, td.GetText(), "");
+                break;
+            default:
+                // 팀원
+                Chat(false, td.GetText(), td.GetName());
+                break;
+        }
     }
+
+    public void Chat(bool isSend, string text, string name)
+    {
+        BubbleScript Bubble = Instantiate(isSend ? playerBubblePrefab : npcBubblePrefab).GetComponent<BubbleScript>();
+        Bubble.transform.SetParent(contentRect.transform, false);
+        Bubble.TextRect.GetComponent<Text>().text = text;
+
+
+        scrollBar.value = 0f;
+        Fit(Bubble.BoxRect);
+    }
+
+    public void Choice(int index)
+    {
+        int answer = 0; // 임시
+        if (answer != index) GameManager.Instance.ChangeEnding();
+    }
+
+    void Fit(RectTransform Rect) => LayoutRebuilder.ForceRebuildLayoutImmediate(Rect);
 
     public void ExitChatroom()
     {
         GameManager.Instance.ChangeScene(GameManager.SCENE.CHATLIST);
-    }
-
-    // 임시코드
-    public void GoEnding(int index)
-    {
-        GameManager.Instance.ending = (GameManager.ENDING)index;
-        GameManager.Instance.ShowEnding();
     }
 }

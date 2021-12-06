@@ -15,6 +15,8 @@ public class DataManager : MonoBehaviour
 
     private List<ChatData> chatDataList;
 
+    public string[] memberName = { "나", "김선효", "신현준", "이혜린" };
+
     public static DataManager Instance
     {
         get
@@ -62,7 +64,7 @@ public class ChatData
     private float dt;
     private int date;
     private int time;
-    private int characterIndex; // 0:시스템, 1~4:사람
+    private int memberIndex; // 0:시스템(독백포함), 1:나, 2~4:팀원
     private string text;        // 대화내용
 
     public float GetDt()
@@ -80,9 +82,14 @@ public class ChatData
         return time;
     }
 
-    public int getCharacterIndex()
+    public int GetMemberIndex()
     {
-        return characterIndex;
+        return memberIndex;
+    }
+
+    public string GetName()
+    {
+        return DataManager.Instance.memberName[memberIndex];
     }
 
     public string GetText()
@@ -92,6 +99,10 @@ public class ChatData
 
     public bool IsSystem()
     {
-        return (characterIndex == 0);
+        return (memberIndex == 0);
+    }
+    public bool IsMyChat()
+    {
+        return (memberIndex == 1);
     }
 }
