@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6921874565479333369}
   - component: {fileID: 4262468158746454194}
   - component: {fileID: 8632669868922874811}
+  - component: {fileID: -3854183872220878056}
   m_Layer: 5
   m_Name: ChatBubble_NPC
   m_TagString: Untagged
@@ -80,6 +81,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &-3854183872220878056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 355508247916768731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45374bdc437908b42a417de3691af857, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BubbleRect: {fileID: 6921874565479333369}
+  BoxRect: {fileID: 1277933584185453601}
+  TextRect: {fileID: 1193739636707654328}
+  NameText: {fileID: 6265274866518255266}
+  TimeText: {fileID: 2210574478405475222}
+  ProfileImage: {fileID: 2512898191104591953}
+  Name: 
+  Time: 
 --- !u!1 &1259960548929776280
 GameObject:
   m_ObjectHideFlags: 0
@@ -311,7 +332,7 @@ GameObject:
   - component: {fileID: 2356472152462789696}
   - component: {fileID: 2512898191104591953}
   m_Layer: 5
-  m_Name: UserImage
+  m_Name: ProfileImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -477,7 +498,7 @@ GameObject:
   - component: {fileID: 4094671795663601197}
   - component: {fileID: 2194795376155749444}
   m_Layer: 5
-  m_Name: UserMask
+  m_Name: ProfileMask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
