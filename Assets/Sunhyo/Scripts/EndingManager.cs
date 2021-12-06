@@ -30,31 +30,7 @@ public class EndingManager : MonoBehaviour
         StartCoroutine("ScrollTxt");
     }
 
-    public void Update()
-    {
-        //Create an array of four values to store our text corners
-        Vector3[] wc = new Vector3[4];
-
-        // Grab the corners of our text rect tranform. 
-        textToScroll.GetComponent<RectTransform>().GetWorldCorners(wc);
-
-        // Create a rectangle based on our text to scroll game object
-        // the same as we did above
-        Rect rect = new Rect(wc[0].x, wc[0].y, wc[2].x - wc[0].x, wc[2].y - wc[0].y);
-
-
-        // Check if it overlaps the canvas rect using the overlap function
-        if(rect.Overlaps(screen))
-        {
-            // Move the text up
-            textToScroll.transform.Translate(Vector3.up * (scrollSpeed * Time.deltaTime));
-        }
-        
-        if(rect.y >= canvasWorldPointWH.y)
-            print("³¡");
-    }
-
-    public void GetEnding(string text)
+    public void SetEndingText(string text)
     {
         endingTxt.text = text;
     }
