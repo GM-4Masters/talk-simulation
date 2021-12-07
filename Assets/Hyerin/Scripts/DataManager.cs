@@ -8,7 +8,14 @@ public class DataManager : MonoBehaviour
 
     private List<ChatData> chatDataList;
 
-    public string[] memberName = { "나", "김선효", "신현준", "이혜린" };
+    public List<string> characterList = new List<string>(){ 
+        "독백", "선택지", "게임시작", "아트님", "시스템", "입장", "퇴장",
+        "팀장님", "김산호", "벅찬우", "이채린", "엄마", "GameMasters", "4MasterTalk" };
+
+    public List<string> chatroomList = new List<string>()
+    {
+        "팀단톡", "김선효", "벅찬우", "이채린", "엄마", "튜토리얼", "GameMasters"
+    };
 
     public static DataManager Instance
     {

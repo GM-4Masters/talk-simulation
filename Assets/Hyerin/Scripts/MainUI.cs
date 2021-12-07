@@ -40,6 +40,7 @@ public class MainUI : MonoBehaviour
     public void ResetGame()
     {
         GameManager.Instance.ResetGame();
+        ClosePopup();
     }
 
     private void ShowPopup(POPUP popupType)
