@@ -39,7 +39,6 @@ public static class CSVReader
             }
             else entry.text = (string)Convert(values[6]);
 
-            Debug.Log("read: " + entry.text);
             list.Add(entry);
         }
         return list;
@@ -50,8 +49,13 @@ public static class CSVReader
         string value = str;
         value = value.TrimStart(TRIM_CHARS).TrimEnd(TRIM_CHARS).Replace("\\", "");
 
-        value = value.Replace("<br>", "\n");
+        //value = value.Replace("<br>", "\n");
         //value = value.Replace("<c>", ",");
+
+        if (value.Contains("unCheck"))
+        {
+            value = value.Substring(19);
+        }
 
         object finalvalue = value;
         int n;
