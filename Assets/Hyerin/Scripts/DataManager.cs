@@ -2,13 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Runtime.CompilerServices;
-using System.Linq;
-using System.IO;
-using System;
-
 public class DataManager : MonoBehaviour
 {
     private static DataManager instance;
@@ -49,7 +42,7 @@ public class DataManager : MonoBehaviour
 
     private void LoadData()
     {
-        //textDataList = JsonConvert.DeserializeObject<List<TextData>>(Resources.Load<TextAsset>($"Data/TextData").text);
+        chatDataList = CSVReader.Read("chatdata");
     }
 
     public ChatData GetChatData(int episodeIndex, int chatIndex)
@@ -60,49 +53,12 @@ public class DataManager : MonoBehaviour
 
 public class ChatData
 {
-    private int index;
-    private float dt;
-    private int date;
-    private int time;
-    private int memberIndex; // 0:시스템(독백포함), 1:나, 2~4:팀원
-    private string text;        // 대화내용
-
-    public float GetDt()
-    {
-        return dt;
-    }
-
-    public int GetDate()
-    {
-        return date;
-    }
-
-    public int GetTime()
-    {
-        return time;
-    }
-
-    public int GetMemberIndex()
-    {
-        return memberIndex;
-    }
-
-    public string GetName()
-    {
-        return DataManager.Instance.memberName[memberIndex];
-    }
-
-    public string GetText()
-    {
-        return text;
-    }
-
-    public bool IsSystem()
-    {
-        return (memberIndex == 0);
-    }
-    public bool IsMyChat()
-    {
-        return (memberIndex == 1);
-    }
+    public int index;           // 인덱스
+    public string chatroom;     // 채팅방 이름
+    public float dt;            // 출력시간(이전 대화 출력 dt초 후 이 대화 출력)
+    public string date;         // 보낸 날짜
+    public string time;         // 보낸 시간
+    public string character;    // 보낸 사람
+    public string text;         // 대화내용
+    public int enterNum;        // 채팅방 입/퇴장 인원수
 }

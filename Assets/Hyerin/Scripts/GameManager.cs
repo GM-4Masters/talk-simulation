@@ -82,22 +82,22 @@ public class GameManager : MonoBehaviour
             if (ending != ENDING.NORMAL) ShowEnding();
             else episodeIndex++;
         }
-        if (spendTime < currentTextData.GetDt())
-        {
-            // 다음 채팅 출력
-            if (currentScene == SCENE.CHATLIST)
-            {
-                if (episodeIndex == 0) PlayAnotherAudio(AUDIO.NOTIFICATION);
-                chatListUI.RefreshChat(currentTextData);
-            }
-            else if (currentScene == SCENE.INGAME)
-            {
-                chatUI.RefreshChat(currentTextData);
-            }
-            currentTextIndex++;
-            currentTextData = DataManager.Instance.GetChatData(episodeIndex, currentTextIndex);
-            spendTime = 0f;
-        }
+        //if (spendTime < currentTextData.dt)
+        //{
+        //    // 다음 채팅 출력
+        //    if (currentScene == SCENE.CHATLIST)
+        //    {
+        //        if (episodeIndex == 0) PlayAnotherAudio(AUDIO.NOTIFICATION);
+        //        chatListUI.RefreshChat(currentTextData);
+        //    }
+        //    else if (currentScene == SCENE.INGAME)
+        //    {
+        //        chatUI.RefreshChat(currentTextData);
+        //    }
+        //    currentTextIndex++;
+        //    currentTextData = DataManager.Instance.GetChatData(episodeIndex, currentTextIndex);
+        //    spendTime = 0f;
+        //}
         //if (isPlay)
         //{
 

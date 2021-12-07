@@ -17,20 +17,6 @@ public class ChatUI : MonoBehaviour
 
     public void RefreshChat(ChatData td)
     {
-        switch (td.GetMemberIndex())
-        {
-            case 0:
-                // 시스템
-                break;
-            case 1:
-                // 나
-                Chat(true, td.GetText(), "");
-                break;
-            default:
-                // 팀원
-                Chat(false, td.GetText(), td.GetName());
-                break;
-        }
     }
 
     public void Chat(bool isSend, string text, string name)
