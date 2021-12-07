@@ -32,7 +32,7 @@ public class ChoiceManager : MonoBehaviour
         midPanel.sizeDelta = new Vector2(0, 1570);
         bottomPanel.sizeDelta = new Vector2(0, 150);
 
-         ChatBar.SetActive(true);
+        ChatBar.SetActive(true);
 
         scrollBar.value = 0f;
     }
