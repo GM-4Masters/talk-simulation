@@ -9,17 +9,18 @@ public class ChatManager : MonoBehaviour
     public GameObject playerBubble, npcBubble;
     public RectTransform contentRect;
     public Scrollbar scrollBar;
-
+    public Text roomName;
+    public Text topic;
     public RectTransform ChatScreen;
     public RectTransform bottomPanel;
     public GameObject ChatBar;
     public GameObject Choices;
-
     public Text ChatText;
+    public Text answerState;
 
     private string first, second, third;
 
-    public void Chat(bool isSend, string text, string s_time, string name = "", string readCount = "")
+    public void Chat(bool isSend, string text, string s_time, string name = "", string readCount = "", string img = "", string fileName = "")
     {
         BubbleScript Bubble = Instantiate(isSend ? playerBubble : npcBubble).GetComponent<BubbleScript>();
         Bubble.transform.SetParent(contentRect.transform, false);
@@ -30,6 +31,19 @@ public class ChatManager : MonoBehaviour
             Bubble.ReadCountText.text = readCount;
         }
 
+        if(img != "")
+        {
+            Bubble.TextRect.gameObject.SetActive(false);
+            Bubble.ChatImage.sprite = Resources.Load<Sprite>("Sprites/Image/" + img);
+        }
+
+        if(fileName != "")
+        {
+            Bubble.TextRect.gameObject.SetActive(false);
+            Bubble.File.SetActive(true);
+            Bubble.FileNameTxt.text = fileName; 
+        }
+
         Bubble.TimeText.text = s_time;
         Bubble.TextRect.GetComponent<Text>().text = text;
 
@@ -38,6 +52,19 @@ public class ChatManager : MonoBehaviour
     }
 
     void Fit(RectTransform Rect) => LayoutRebuilder.ForceRebuildLayoutImmediate(Rect);
+
+
+
+
+
+
+
+
+    public void SetChatScreen(string _roomName, string _topic)
+    {
+        roomName.text = _roomName;
+        topic.text = _topic;
+    }
 
 
 
@@ -124,6 +151,7 @@ public class ChatManager : MonoBehaviour
 
     public void PrintAside(string text)
     {
+        answerState.text = "독백";
         StartCoroutine(PrintLikeKeyboard(text));
     }
 
@@ -166,6 +194,9 @@ public class ChatManager : MonoBehaviour
         first = _first;
         second = _second;
         third = _third;
+
+        ChatText.text = "ANSWER";
+        answerState.text = "답장";
 
         StartCoroutine("FadeTextToZeroAlpha");
     }

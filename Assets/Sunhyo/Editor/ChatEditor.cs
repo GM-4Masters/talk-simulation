@@ -30,7 +30,7 @@ public class ChatEditor : Editor
 
         if(GUILayout.Button("받기", GUILayout.Width(60)) && text.Trim() != "")
         {
-            chatManager.Chat(false, text, "오후 8:32", "귀여운 곰돌이 푸", "4");
+            chatManager.Chat(false, text, "오후 8:32", "귀여운 곰돌이 푸", "4", "", "잘 되는지 봅시다.txt");
             text = "";
             GUI.FocusControl(null);
         }

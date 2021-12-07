@@ -241,6 +241,14 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.48235297
       objectReference: {fileID: 0}
+    - target: {fileID: 2078988201990785214, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 2078988201990785214, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3092273121565060636, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
       propertyPath: m_Name
       value: AsideBtn
@@ -596,6 +604,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 687594181}
   m_CullTransparentMesh: 1
+--- !u!114 &992416001 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8230766209157430126, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+  m_PrefabInstance: {fileID: 381902404}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &999092373
 GameObject:
   m_ObjectHideFlags: 0
@@ -830,6 +849,17 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1670138503 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1185395699, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+  m_PrefabInstance: {fileID: 381902404}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1716887296 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4752119000576515733, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
@@ -1130,6 +1160,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
+      propertyPath: topic
+      value: 
+      objectReference: {fileID: 1670138503}
+    - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
       propertyPath: ChatBar
       value: 
       objectReference: {fileID: 329124083}
@@ -1145,6 +1179,10 @@ PrefabInstance:
       propertyPath: midPanel
       value: 
       objectReference: {fileID: 675345305}
+    - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
+      propertyPath: roomName
+      value: 
+      objectReference: {fileID: 992416001}
     - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
       propertyPath: scrollBar
       value: 

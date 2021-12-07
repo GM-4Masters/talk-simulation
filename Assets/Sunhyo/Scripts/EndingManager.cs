@@ -33,12 +33,18 @@ public class EndingManager : MonoBehaviour
 
         StartCoroutine("PauseBeforeStart");
         StartCoroutine("ScrollTxt");
+
+
+
+
+        // 테스트
+        SetEnding("Stage Test", "Ending0", "엔딩입니다");
     }
 
     public void SetEnding(string _stageTxt, string _endingImg, string _endingTxt)
     {
         stageTxt.text = _stageTxt;
-        // endingImg = ;
+        endingImg.sprite = Resources.Load<Sprite>("Sprites/Ending/" + _endingImg);
         endingTxt.text = _endingTxt;
     }
 
