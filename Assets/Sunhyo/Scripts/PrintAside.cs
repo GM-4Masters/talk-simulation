@@ -3,46 +3,40 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Talk : MonoBehaviour
+public class PrintAside : MonoBehaviour
 {
-    // 현재는 텍스트 파일을 직접 추가하는 방식임 Resource 추출로 바꿔야 함
-    public TextAsset txt;
+    public Text testTxt;
 
-    string[,] Sentence;
-    int lineSize, rowSize;
-
-    private State state = State.NotInitialized;
-    private List<string> script = new List<string>();
-
-    public int currentIdx = 0;
-    
-    [SerializeField]
-    Text uiText;
-
-    enum State
+    void Start()
     {
-        NotInitialized,
-        Playing,
-        PlayingSkipping,
-        Completed,
+        string text = "테스트 테스트 테스트 테스트 테스트 테스트 테스트 테스트";
+        Print(text);
     }
 
-    IEnumerator Print(string script)
+    public void Print(string _text)
     {
-        for (int i = 0; i < script.Length + 1; i++)
+        StartCoroutine(PrintLikeKeyboard(_text));
+    }
+
+    IEnumerator PrintLikeKeyboard(string _text)
+    {
+        for (int i = 0; i < _text.Length + 1; i++)
         {
             yield return new WaitForSeconds(0.1f);
-            if (state == State.PlayingSkipping)
-            {
-                uiText.text = script;
-                state = State.Playing;
-                break;
-            }
-            uiText.text = script.Substring(0, i);
+
+            testTxt.text = _text.Substring(0, i);
         }
-        
-        while(state != State.PlayingSkipping)
-            yield return new WaitForSeconds(0.1f);
-        state = State.Playing;
+
+        StartCoroutine(DeleteString(_text));
+    }
+
+    IEnumerator DeleteString(string _text)
+    {
+        for (int i = _text.Length; i >= 0; i--)
+        {
+            yield return new WaitForSeconds(0.05f);
+
+            testTxt.text = _text.Substring(0, i);
+        }
     }
 }

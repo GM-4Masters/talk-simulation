@@ -15,10 +15,18 @@ public class ChatManager : MonoBehaviour
     public GameObject ChatBar;
     public GameObject Choices;
 
-    public void Chat(bool isSend, string text, string name)
+    public void Chat(bool isSend, string text, string s_time, string name = "", string readCount = "")
     {
         BubbleScript Bubble = Instantiate(isSend ? playerBubble : npcBubble).GetComponent<BubbleScript>();
         Bubble.transform.SetParent(contentRect.transform, false);
+        
+        if(!isSend)
+        {
+            Bubble.NameText.text = name;
+            Bubble.ReadCountText.text = readCount;
+        }
+
+        Bubble.TimeText.text = s_time;
         Bubble.TextRect.GetComponent<Text>().text = text;
 
         scrollBar.value = 0f;
