@@ -6,11 +6,16 @@ using UnityEngine.UI;
 public class EndingManager : MonoBehaviour
 {
     public bool repeat;
+
     public float scrollSpeed;
     public GameObject textToScroll;
+
     public Canvas canvas;
+
+    public Text stageTxt;
+    public Image bannerImg;
+    public Image endingImg;
     public Text endingTxt;
-    public GameObject end;
 
     Vector3 canvasWorldPointWH;
 
@@ -26,13 +31,15 @@ public class EndingManager : MonoBehaviour
         // Draw our rectangle. First the position from canvasWorldPointZero then to the width and height.
         screen = new Rect(canvasWorldPointZero, new Vector2(canvasWorldPointWH.x - canvasWorldPointZero.x, canvasWorldPointWH.y - canvasWorldPointZero.y));
 
-        // StartCoroutine("PauseBeforeStart");
+        StartCoroutine("PauseBeforeStart");
         StartCoroutine("ScrollTxt");
     }
 
-    public void SetEndingText(string text)
+    public void SetEnding(string _stageTxt, string _endingImg, string _endingTxt)
     {
-        endingTxt.text = text;
+        stageTxt.text = _stageTxt;
+        // endingImg = ;
+        endingTxt.text = _endingTxt;
     }
 
     IEnumerator PauseBeforeStart()
@@ -68,12 +75,10 @@ public class EndingManager : MonoBehaviour
 
             yield return null;
         }
-
-        End();
     }
 
-    void End()
+    public void GoMain()
     {
-        end.SetActive(true);
+        print("메인으로 이동");
     }
 }

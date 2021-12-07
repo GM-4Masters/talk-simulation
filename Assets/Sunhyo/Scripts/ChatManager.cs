@@ -15,11 +15,15 @@ public class ChatManager : MonoBehaviour
     public GameObject ChatBar;
     public GameObject Choices;
 
+    public Text ChatText;
+
+    private string first, second, third;
+
     public void Chat(bool isSend, string text, string s_time, string name = "", string readCount = "")
     {
         BubbleScript Bubble = Instantiate(isSend ? playerBubble : npcBubble).GetComponent<BubbleScript>();
         Bubble.transform.SetParent(contentRect.transform, false);
-        
+
         if(!isSend)
         {
             Bubble.NameText.text = name;
@@ -35,13 +39,34 @@ public class ChatManager : MonoBehaviour
 
     void Fit(RectTransform Rect) => LayoutRebuilder.ForceRebuildLayoutImmediate(Rect);
 
+
+
+
+
+
+
+
+
+
+
+
     public void ShowChoice()
     {
+        StopAllCoroutines();
+
         ChatBar.SetActive(false);
 
         ChatScreen.anchoredPosition = new Vector2(0, 145);
         ChatScreen.sizeDelta = new Vector2(0, 880);
         bottomPanel.sizeDelta = new Vector2(0, 640);
+
+        Text firstTxt = Choices.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>();
+        Text secondTxt = Choices.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
+        Text thirdTxt = Choices.transform.GetChild(2).transform.GetChild(0).GetComponent<Text>();
+
+        firstTxt.text = first;
+        secondTxt.text = second;
+        thirdTxt.text = third;
 
         Choices.SetActive(true);
 
@@ -76,8 +101,104 @@ public class ChatManager : MonoBehaviour
         print("세번째");
     }
 
+
+
+
+
+
+
+
+
     public void BackToChatList()
     {
         print("리스트로 이동");
     }
+
+
+
+
+
+
+
+
+
+    public void PrintAside(string text)
+    {
+        StartCoroutine(PrintLikeKeyboard(text));
+    }
+
+    IEnumerator PrintLikeKeyboard(string _text)
+    {
+        for (int i = 0; i < _text.Length + 1; i++)
+        {
+            yield return new WaitForSeconds(0.1f);
+
+            ChatText.text = _text.Substring(0, i);
+        }
+
+        StartCoroutine(DeleteString(_text));
+    }
+
+    IEnumerator DeleteString(string _text)
+    {
+        for (int i = _text.Length; i >= 0; i--)
+        {
+            yield return new WaitForSeconds(0.05f);
+
+            ChatText.text = _text.Substring(0, i);
+        }
+    }
+
+
+
+
+
+
+
+    public void BTNTEST()
+    {
+        SetAnswer();
+    }
+
+
+    void SetAnswer(string _first = "", string _second = "", string _third = "")
+    {
+        first = _first;
+        second = _second;
+        third = _third;
+
+        StartCoroutine("FadeTextToZeroAlpha");
+    }
+
+    public IEnumerator FadeTextToFullAlpha() // 알파값 0에서 1로 전환
+    {
+        ChatText.color = new Color(ChatText.color.r, ChatText.color.g, ChatText.color.b, 0);
+        while (ChatText.color.a < 1.0f)
+        {
+            ChatText.color = new Color(ChatText.color.r, ChatText.color.g, ChatText.color.b, ChatText.color.a + (Time.deltaTime / 2.0f));
+            yield return null;
+        }
+        StartCoroutine(FadeTextToZeroAlpha());
+    }
+
+    public IEnumerator FadeTextToZeroAlpha()  // 알파값 1에서 0으로 전환
+    {
+        ChatText.color = new Color(ChatText.color.r, ChatText.color.g, ChatText.color.b, 1);
+        while (ChatText.color.a > 0.0f)
+        {
+            ChatText.color = new Color(ChatText.color.r, ChatText.color.g, ChatText.color.b, ChatText.color.a - (Time.deltaTime / 2.0f));
+            yield return null;
+        }
+        StartCoroutine(FadeTextToFullAlpha());
+    }
+
+
+
+
+
+
+
+
+
+
 }
