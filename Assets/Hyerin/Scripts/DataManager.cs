@@ -6,7 +6,10 @@ public class DataManager : MonoBehaviour
 {
     private static DataManager instance;
 
-    private List<ChatData> chatDataList;
+    //private List<ChatData> chatDataList;
+    private List<List<ChatData>> chatDataList = new List<List<ChatData>>();
+    private List<List<ChatData>> subDataList = new List<List<ChatData>>();
+    private List<ChatData> tutorial = new List<ChatData>();
 
     public List<string> characterList = new List<string>(){ 
         "µ∂πÈ", "º±≈√¡ˆ", "∞‘¿”Ω√¿€", "æ∆∆Æ¥‘", "Ω√Ω∫≈€", "¿‘¿Â", "≈¿Â",
@@ -16,6 +19,8 @@ public class DataManager : MonoBehaviour
     {
         "∆¿¥‹≈Â", "±Ëº±»ø", "π˜¬˘øÏ", "¿Ã√§∏∞", "æˆ∏∂", "∆©≈‰∏ÆæÛ", "GameMasters"
     };
+
+    public enum DATATYPE { MAIN, SUB, TUTORIAL }
 
     public static DataManager Instance
     {
@@ -49,12 +54,59 @@ public class DataManager : MonoBehaviour
 
     private void LoadData()
     {
-        chatDataList = CSVReader.Read("chatdata");
+        //chatDataList.Add(CSVReader.Read("chatdata"));
+        chatDataList.Add(CSVReader.Read("chatData_ep1"));
+        chatDataList.Add(CSVReader.Read("chatData_ep2"));
+        chatDataList.Add(CSVReader.Read("chatData_ep3"));
+
+        subDataList.Add(CSVReader.Read("chatData_SubEp1Str"));
+        subDataList.Add(CSVReader.Read("chatData_SubEp2Str"));
+        subDataList.Add(CSVReader.Read("chatData_SubEp3Str"));
+
+        tutorial = CSVReader.Read("chatData_tutorial");
+    }
+    
+    public int GetEpisodeSize(int episodeIndex)
+    {
+        return chatDataList[episodeIndex].Count;
+    }
+
+    public List<ChatData> GetChatList(int episodeIndex, DATATYPE type)
+    {
+        List<ChatData> data = new List<ChatData>();
+        if (type == DATATYPE.MAIN) data = chatDataList[episodeIndex];
+        else if (type == DATATYPE.SUB) data = subDataList[episodeIndex];
+        else data = tutorial;
+
+        return data;
+    }
+
+    public List<ChatData> GetChatList(int episodeIndex, string chatroom)
+    {
+        List<ChatData> data = new List<ChatData>();
+        if (chatroom == "∆¿¥‹≈Â") data = chatDataList[episodeIndex];
+        else if (chatroom == "∆©≈‰∏ÆæÛ") data = tutorial;
+        else
+        {
+            for(int i=0; i<subDataList[episodeIndex].Count; i++)
+            {
+                if (subDataList[episodeIndex][i].chatroom == chatroom)
+                    data.Add(subDataList[episodeIndex][i]);
+            }
+        }
+
+        return data;
     }
 
     public ChatData GetChatData(int episodeIndex, int chatIndex)
     {
-        return chatDataList[chatIndex];
+        return chatDataList[episodeIndex][chatIndex];
+        //return chatDataList[chatIndex];
+    }
+
+    public ChatData GetLastTutorial()
+    {
+        return tutorial[tutorial.Count - 1];
     }
 }
 

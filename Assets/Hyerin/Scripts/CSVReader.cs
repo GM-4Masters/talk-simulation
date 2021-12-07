@@ -24,12 +24,14 @@ public static class CSVReader
         {
 
             var values = Regex.Split(lines[i], SPLIT_RE);
-            if (values.Length == 0 || values[0] == "") continue;
+            if (values.Length == 1) continue;
 
             var entry = new ChatData();
-            entry.index = (int)Convert(values[0]);
+            if (values[0] != "") entry.index = (int)Convert(values[0]);
+            //entry.index = (int)Convert(values[0]);
             entry.chatroom = (string)Convert(values[1]);
-            entry.dt = (float)Convert(values[2]);
+            if(values[2]!="") entry.dt = (float)Convert(values[2]);
+            //entry.dt = (float)Convert(values[2]);
             entry.date = (string)Convert(values[3]);
             entry.time = (string)Convert(values[4]);
             entry.character = (string)Convert(values[5]);

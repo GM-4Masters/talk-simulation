@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,25 +10,44 @@ public class ChatUI : MonoBehaviour
 
     ChatData chatData;
 
-    private void Awake()
+    private int chatroomIndex;
+
+    private List<ChatData> data;
+
+    private void OnEnable()
     {
+        chatroomIndex = DataManager.Instance.chatroomList.IndexOf(GameManager.Instance.chatroom);
+        data = DataManager.Instance.GetChatList(GameManager.Instance.GetEpisodeIndex(), GameManager.Instance.chatroom);
+
+        // 팀단톡이라면 마지막으로 갱신했던 인덱스까지 출력
+        int endIndex = ((chatroomIndex != 0) ? data.Count : GameManager.Instance.lastChatIndex);
+
+        for (int i = 0; i < endIndex; i++)
+        {
+            chatData = data[i];
+            SetUI();
+        }
     }
 
     private void Update()
     {
-        int recentIndex = GameManager.Instance.currentChatIndex;
-        if(GameManager.Instance.lastChatIndex != recentIndex)
+        // 팀 단톡일 경우
+        if (chatroomIndex == 0)
         {
-            for(int i= GameManager.Instance.lastChatIndex + 1; i< recentIndex; i++)
+            int recentIndex = GameManager.Instance.currentChatIndex;
+            if (GameManager.Instance.lastChatIndex != recentIndex)
             {
-                chatData = DataManager.Instance.GetChatData(0, i);
-                Play();
+                for (int i = GameManager.Instance.lastChatIndex+1; i <= recentIndex; i++)
+                {
+                    chatData = DataManager.Instance.GetChatData(0, i);
+                    SetUI();
+                }
+                GameManager.Instance.lastChatIndex = recentIndex;
             }
-            GameManager.Instance.lastChatIndex = recentIndex;
         }
     }
 
-    public void Play()
+    public void SetUI()
     {
         int characterIndex = DataManager.Instance.characterList.IndexOf(chatData.character);
         switch (chatData.character)
@@ -44,25 +65,32 @@ public class ChatUI : MonoBehaviour
                 ChangeReaderCount(chatData.enterNum);
                 break;
             case "퇴장":
-                ChangeReaderCount(chatData.enterNum);
+                ChangeReaderCount(-chatData.enterNum);
                 break;
             case "아트님":
-                chatManager.Chat(true, chatData.text, chatData.time, chatData.character, "3");
+                Talk();
+                break;
+            case "게임시작":
+                GameManager.Instance.ChangeWaitFlag(false);
                 break;
             default:
                 chatManager.Chat(false, chatData.text, chatData.time, chatData.character, "3");
                 break;
         }
+        //Debug.Log("채팅 갱신:" + chatData.index + "ch:" + chatData.character);
     }
 
     public void Monologue()
     {
         // 독백 애니메이션 끝난 후 다음으로 넘어감
+        GameManager.Instance.ChangeWaitFlag(false);
     }
 
     public void WaitForSelect()
     {
-        // 선택지 실행 후 대기
+        // 선택지 실행 후 대기(정답 위치 랜덤)
+        int answerNum = Random.Range(0, 2);
+
         GameManager.Instance.ChangeWaitFlag(true);
     }
 
@@ -85,8 +113,17 @@ public class ChatUI : MonoBehaviour
         // 입장/퇴장 처리
     }
 
+    public void Talk()
+    {
+        chatManager.Chat(true, chatData.text, chatData.time, chatData.character, "3");
+        GameManager.Instance.ChangeWaitFlag(false);
+    }
+
     public void ExitChatroom()
     {
+        // 튜토리얼 완료
+        if (chatroomIndex == 5 && !GameManager.Instance.IsTutorialFinished()) GameManager.Instance.FinishTutorial();
+
         GameManager.Instance.ChangeScene(GameManager.SCENE.CHATLIST);
     }
 }

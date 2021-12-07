@@ -7,6 +7,7 @@ public class ChatListUI : MonoBehaviour
 {
     [SerializeField] private GameObject scrollView;
 
+    private GameObject[] chatListBlock;
     private Button[] chatListBtn;
     private Text[] nameTxt, previewTxt, timeTxt, dateTxt;
 
@@ -15,46 +16,70 @@ public class ChatListUI : MonoBehaviour
     private void Awake()
     {
         GameObject content = scrollView.transform.GetChild(0).GetChild(0).gameObject;
-        chatListBtn = new Button[content.transform.childCount];
-        nameTxt = new Text[content.transform.childCount];
-        previewTxt = new Text[content.transform.childCount];
-        timeTxt = new Text[content.transform.childCount];
-        dateTxt = new Text[content.transform.childCount];
+        int size = content.transform.childCount;
+        chatListBlock = new GameObject[size];
+        chatListBtn = new Button[size];
+        nameTxt = new Text[size];
+        previewTxt = new Text[size];
+        timeTxt = new Text[size];
+        dateTxt = new Text[size];
         for (int i=0; i<chatListBtn.Length; i++)
         {
-            GameObject chatList = content.transform.GetChild(i).gameObject;
-            chatListBtn[i] = chatList.GetComponent<Button>();
-            if (i != 0) chatListBtn[i].interactable = false;
+            chatListBlock[i] = content.transform.GetChild(i).gameObject;
+            chatListBtn[i] = chatListBlock[i].GetComponent<Button>();
             int index = i;
             chatListBtn[i].onClick.AddListener(() => { EnterChatroom(index); });
 
-            nameTxt[i] = chatList.transform.GetChild(1).GetComponent<Text>();
-            previewTxt[i] = chatList.transform.GetChild(2).GetComponent<Text>();
-            timeTxt[i] = chatList.transform.GetChild(3).GetComponent<Text>();
-            dateTxt[i] = chatList.transform.GetChild(4).GetComponent<Text>();
+            nameTxt[i] = chatListBlock[i].transform.GetChild(1).GetComponent<Text>();
+            previewTxt[i] = chatListBlock[i].transform.GetChild(2).GetComponent<Text>();
+            timeTxt[i] = chatListBlock[i].transform.GetChild(3).GetComponent<Text>();
+            dateTxt[i] = chatListBlock[i].transform.GetChild(4).GetComponent<Text>();
         }
     }
 
     private void OnEnable()
     {
-        if(chatData!=null) Play();
+        for(int i=0; i<chatListBlock.Length; i++)
+        {
+            chatListBlock[i].SetActive(false);
+        }
+
+        int episodeIndex = GameManager.Instance.GetEpisodeIndex();
+
+        // 현재 에피소드의 서브 채팅방 및 단톡방 세팅
+        if (episodeIndex >= 0)
+        {
+            List<ChatData> data = DataManager.Instance.GetChatList(episodeIndex, DataManager.DATATYPE.SUB);
+            for (int i = 0; i < data.Count; i++)
+            {
+                int index = DataManager.Instance.chatroomList.IndexOf(data[i].chatroom);
+                SetChatroomBlock(index, data[i]);
+            }
+
+            Debug.Log("lastlist:"+GameManager.Instance.lastListIndex);
+            chatData = DataManager.Instance.GetChatData(episodeIndex, GameManager.Instance.lastListIndex);
+            SetGroupTalkUI();
+        }
+
+        // 튜토리얼은 항상 보임
+        SetChatroomBlock(5, DataManager.Instance.GetLastTutorial());
     }
 
     private void Update()
     {
-        int recentIndex = GameManager.Instance.currentChatIndex;
-        if (GameManager.Instance.lastListIndex != recentIndex)
+        int episodeIndex = GameManager.Instance.GetEpisodeIndex();
+        if(episodeIndex >= 0)
         {
-            for (int i = GameManager.Instance.lastListIndex + 1; i < recentIndex; i++)
+            chatListBlock[0].SetActive(true);
+            int recentIndex = GameManager.Instance.currentChatIndex;
+            if (GameManager.Instance.lastListIndex != recentIndex)
             {
-                chatData = DataManager.Instance.GetChatData(0, i);
-                Play();
+                chatData = DataManager.Instance.GetChatData(episodeIndex, recentIndex);
+                SetGroupTalkUI();
             }
-            GameManager.Instance.lastListIndex = recentIndex;
         }
     }
-
-    public void Play()
+    public void SetGroupTalkUI()
     {
         // 말풍선 형태 데이터일때만 화면 갱신
         int characterIndex = DataManager.Instance.characterList.IndexOf(chatData.character);
@@ -62,21 +87,24 @@ public class ChatListUI : MonoBehaviour
         {
             // 에피소드 1에서만 카톡 알림음 
             //if (episodeIndex == 0 || chatroomIndex != 0) GameManager.Instance.PlayAnotherAudio(GameManager.AUDIO.NOTIFICATION);
-            Debug.Log("미리보기 갱신:" + chatData.index +"ch:" +chatData.character);
-            RefreshChat();
+            SetChatroomBlock(0, chatData);
+            GameManager.Instance.lastListIndex = GameManager.Instance.currentChatIndex;
         }
     }
 
-    public void RefreshChat()
+    // 하나의 채팅방 블럭 세팅
+    private void SetChatroomBlock(int index, ChatData lastData)
     {
-        nameTxt[0].text = chatData.character;
-        previewTxt[0].text = chatData.text;
-        timeTxt[0].text = chatData.time;
-        dateTxt[0].text = chatData.date;
+        chatListBlock[index].SetActive(true);
+        nameTxt[index].text = lastData.character;
+        previewTxt[index].text = lastData.text;
+        timeTxt[index].text = lastData.time;
+        dateTxt[index].text = lastData.date;
     }
 
     private void EnterChatroom(int index)
     {
+        GameManager.Instance.ChangeChatroom(index);
         GameManager.Instance.ChangeScene(GameManager.SCENE.INGAME);
     }
 }

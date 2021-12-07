@@ -22,14 +22,17 @@ public class GameManager : MonoBehaviour
     public int lastListIndex = -1;
     public int lastChatIndex = -1;
 
-    private bool isWait;                           // 선택지
+    private bool isTutorialFinished = false;                        // 튜토리얼 완료 여부
+
+    private bool isWait;                                    // 대기
     private float spendTime;                                // 흐른 시간(채팅 출력 후 리셋)
-    public int currentChatIndex = 0;                       // 현재 출력할 채팅 번호
-    private int episodeIndex = 0;                           // 현재 에피소드 번호
+    public int currentChatIndex = 0;                        // 현재 출력할 채팅 번호
+    public string chatroom = null;                          // 현재 입장한 채팅방(팀단톡,김선효,벅찬우,이채린,엄마,튜토리얼,GameMasters)
+    private int episodeIndex = -1;                           // 현재 에피소드 번호
     private SCENE currentScene;                             // 현재 씬 타입
     public ENDING ending = ENDING.NORMAL;                   // 엔딩
 
-    public int[] boundary = { 30, 60, 90 };                 // 에피소드 분기점
+    public int[] boundary = { 15, 8, 84, 60, 90 };         // 에피소드 분기점(서브1, 튜토, 메인1, 서브2, 메인2, 서브3, 메인3)
 
     public enum ENDING { BAD1, BAD2, BAD3, NORMAL, }
     public enum AUDIO { MAIN, INGAME, BAD, NORMAL, NOTIFICATION }
@@ -79,25 +82,43 @@ public class GameManager : MonoBehaviour
     {
         spendTime += Time.deltaTime;
 
-        //// 다음 에피소드 재생 또는 게임오버
-        //if (currentChatIndex == boundary[episodeIndex])
-        //{
-        //    if (ending != ENDING.NORMAL) ShowEnding();
-        //    else episodeIndex++;
-        //}
-
-        // 시간조건 만족했고
-        if (spendTime >= currentChatData.dt)
+        // 조건 만족했고
+        if (episodeIndex>=0 && !isWait && spendTime >= currentChatData.dt)
         {
             // 현재 채팅방에 있거나 채팅방에 없어도 실행되는 데이터일 경우
             int characterIndex = DataManager.Instance.characterList.IndexOf(currentChatData.character);
             if (currentScene == SCENE.INGAME || (characterIndex > 3 && characterIndex < 13))
             {
-                currentChatIndex++;
-                currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
-                spendTime = 0f;
+                GoNext();
             }
         }
+    }
+
+    public void GoNext()
+    {
+        currentChatIndex++;
+
+        // 현재 에피소드 끝까지 진행되었을 경우 - 다음 에피소드로 이동 or 게임오버
+        if(currentChatIndex == DataManager.Instance.GetEpisodeSize(episodeIndex))
+        {
+            if (ending == ENDING.NORMAL) GoToNextEpisode();
+            else ChangeScene(SCENE.ENDING);
+        }
+
+        currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
+        spendTime = 0f;
+
+        string waitCharacter = "독백,선택지,게임시작,아트님";
+        if (waitCharacter.Contains(currentChatData.character)) isWait = true;
+    }
+
+    public void GoToNextEpisode()
+    {
+        episodeIndex++;
+        currentChatIndex = 0;
+        currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
+        lastChatIndex = -1;
+        lastListIndex = -1;
     }
 
     public void Save()
@@ -122,11 +143,17 @@ public class GameManager : MonoBehaviour
         Debug.Log("게임데이터 리셋");
 
         PlayerPrefs.DeleteAll();
+        isTutorialFinished = false;
         isWait = false;
         episodeIndex = 0;
         spendTime = 0f;
         currentChatIndex = 0;
         ending = ENDING.NORMAL;
+    }
+
+    public int GetEpisodeIndex()
+    {
+        return episodeIndex;
     }
 
     public ChatData GetChatData()
@@ -137,6 +164,17 @@ public class GameManager : MonoBehaviour
     public ENDING GetEndingType()
     {
         return ending;
+    }
+
+    public bool IsTutorialFinished()
+    {
+        return isTutorialFinished;
+    }
+
+    public void FinishTutorial()
+    {
+        isTutorialFinished = true;
+        GoToNextEpisode();
     }
 
     // 오답 선택지 선택 시 현재 에피소드 번호를 엔딩번호로 지정
@@ -154,6 +192,12 @@ public class GameManager : MonoBehaviour
     {
         audioSource.Stop();
         SceneManager.LoadScene((int)scene);
+    }
+
+    public void ChangeChatroom(int index)
+    {
+        if (index == -1) chatroom = null;
+        else chatroom = DataManager.Instance.chatroomList[index];
     }
 
     // 씬 로드 시 호출
