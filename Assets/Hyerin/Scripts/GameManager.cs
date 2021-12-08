@@ -25,14 +25,17 @@ public class GameManager : MonoBehaviour
     private bool isTutorialFinished = false;                        // 튜토리얼 완료 여부
 
     private bool isWait;                                    // 대기
+    private bool isSkipping;
     private float spendTime;                                // 흐른 시간(채팅 출력 후 리셋)
     public int currentChatIndex = 0;                        // 현재 출력할 채팅 번호
+    public int selectedNum = -1;                             // 선택지 선택 수
     public string chatroom = null;                          // 현재 입장한 채팅방(팀단톡,김선효,벅찬우,이채린,엄마,튜토리얼,GameMasters)
     private int episodeIndex = -1;                           // 현재 에피소드 번호
     private SCENE currentScene;                             // 현재 씬 타입
     public ENDING ending = ENDING.NORMAL;                   // 엔딩
 
-    public int[] boundary = { 15, 8, 84, 60, 90 };         // 에피소드 분기점(서브1, 튜토, 메인1, 서브2, 메인2, 서브3, 메인3)
+    public int[,] epGood = { {10,12 } };
+    public int[,] epBad = { {13,17} };
 
     public enum ENDING { BAD1, BAD2, BAD3, NORMAL, }
     public enum AUDIO { MAIN, INGAME, BAD, NORMAL, NOTIFICATION }
@@ -108,8 +111,9 @@ public class GameManager : MonoBehaviour
         currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
         spendTime = 0f;
 
-        string waitCharacter = "독백,선택지,게임시작,아트님";
+        string waitCharacter = "선택지";
         if (waitCharacter.Contains(currentChatData.character)) isWait = true;
+        //if (currentScene != SCENE.INGAME && currentChatData.character == "아트님") isWait = true;
     }
 
     public void GoToNextEpisode()
@@ -119,6 +123,7 @@ public class GameManager : MonoBehaviour
         currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
         lastChatIndex = -1;
         lastListIndex = -1;
+        selectedNum = -1;
     }
 
     public void Save()
@@ -148,7 +153,9 @@ public class GameManager : MonoBehaviour
         episodeIndex = 0;
         spendTime = 0f;
         currentChatIndex = 0;
+        currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
         ending = ENDING.NORMAL;
+        isSkipping = false;
     }
 
     public int GetEpisodeIndex()
@@ -164,6 +171,28 @@ public class GameManager : MonoBehaviour
     public ENDING GetEndingType()
     {
         return ending;
+    }
+
+    // 현재 진행 흐름에 맞는 대화인지
+    public bool IsRight(int index)
+    {
+        if (selectedNum < 0) return true;
+        // 배드엔딩 아닌경우 배드엔딩 채팅 범위에 속하지 않아야 함
+        if (ending == ENDING.NORMAL)
+        {
+            //Debug.Log("index:" + index + ",epbad[0]"+epBad[selectedNum,0]+",epbad[1]:"+epb);
+            return (index < epBad[selectedNum, 0] || index > epBad[selectedNum, 1]);
+        }
+        else
+        {
+            //Debug.Log("index:" + index + ",ep");
+            return (index < epGood[selectedNum, 0] || index > epGood[selectedNum, 1]);
+        }
+    }
+
+    public bool IsSkipping()
+    {
+        return isSkipping;
     }
 
     public bool IsTutorialFinished()
