@@ -552,11 +552,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!224 &675345305 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7031575549543023617, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
-  m_PrefabInstance: {fileID: 381902404}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &687594181
 GameObject:
   m_ObjectHideFlags: 0
@@ -1208,10 +1203,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 319552030}
     - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
-      propertyPath: midPanel
-      value: 
-      objectReference: {fileID: 675345305}
-    - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
       propertyPath: roomName
       value: 
       objectReference: {fileID: 992416001}
@@ -1223,10 +1214,6 @@ PrefabInstance:
       propertyPath: ChatScreen
       value: 
       objectReference: {fileID: 1911020099}
-    - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
-      propertyPath: DatePrefab
-      value: 
-      objectReference: {fileID: 137921466519926356, guid: b4de98048c1c89d49b14e3a994287626, type: 3}
     - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
       propertyPath: bottomPanel
       value: 

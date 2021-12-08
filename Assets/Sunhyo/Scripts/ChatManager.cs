@@ -22,11 +22,6 @@ public class ChatManager : MonoBehaviour
 
     private string first, second, third;
 
-    void Start()
-    {
-        SetDate("테테스트");
-    }
-
     public void Chat(bool isSend, string text, string s_time, string name = "", string readCount = "", string img = "", string fileName = "")
     {
         BubbleScript Bubble = Instantiate(isSend ? playerBubble : npcBubble).GetComponent<BubbleScript>();
