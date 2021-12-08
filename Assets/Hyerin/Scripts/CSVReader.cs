@@ -59,6 +59,8 @@ public static class CSVReader
             value = value.Substring(19);
         }
 
+        value = value.Replace("<br>", "\n");
+
         object finalvalue = value;
         int n;
         float f;
