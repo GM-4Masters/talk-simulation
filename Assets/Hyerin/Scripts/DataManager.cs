@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class DataManager : MonoBehaviour
 {
@@ -18,8 +19,11 @@ public class DataManager : MonoBehaviour
 
     public List<string> chatroomList = new List<string>()
     {
-        "ÆÀ´ÜÅå", "±è¼±È¿", "¹÷Âù¿ì", "ÀÌÃ¤¸°", "¾ö¸¶", "Æ©Åä¸®¾ó", "GameMasters"
+        "ÆÀ´ÜÅå", "±è»êÈ£", "¹÷Âù¿ì", "ÀÌÃ¤¸°", "¾ö¸¶", "Æ©Åä¸®¾ó", "GameMasters"
     };
+
+    public List<List<string>> noticeList = new List<List<string>>();
+    public List<string> endingList = new List<string>();
 
     public enum DATATYPE { MAIN, SUB, PERSONAL, TUTORIAL }
 
@@ -50,10 +54,47 @@ public class DataManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        LoadData();
+        LoadChatData();
+        LoadNoticeData("noticedata");
+        LoadEndingData("endingdata");
     }
 
-    private void LoadData()
+    private void LoadNoticeData(string fileName)
+    {
+        TextAsset txt = Resources.Load(fileName) as TextAsset;
+        string[] lines = txt.text.Split('\n');
+
+        for (int i=0; i<4; i++)
+        {
+            List<string> data = new List<string>();
+            for(int j=0; j<3; j++)
+            {
+                data.Add(lines[i*3+j]);
+            }
+            noticeList.Add(data);
+        }
+    }
+
+    private void LoadEndingData(string fileName)
+    {
+        TextAsset txt = Resources.Load(fileName) as TextAsset;
+        string[] lines = txt.text.Split('\n');
+
+        int endingIndex = 0;
+        string endingTxt = "";
+        foreach (string line in lines)
+        {
+            if (line.Contains("-"))
+            {
+                endingList.Add(endingTxt);
+                endingTxt = "";
+                endingIndex++;
+            }
+            else endingTxt+=(line+"\n");
+        }
+    }
+
+    private void LoadChatData()
     {
         tutorial = CSVReader.Read("chatData_tutorial");
 

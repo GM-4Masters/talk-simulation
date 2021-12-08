@@ -21,6 +21,8 @@ public class EndingManager : MonoBehaviour
 
     private Rect screen;
 
+    private string[] endingTitle = { "#1. Bad Ending", "#2. Bad Ending", "#3. Bad Ending", "#4. Good Ending" };
+
     public void Start()
     {
         // Grab the tranform position as a world point
@@ -37,8 +39,14 @@ public class EndingManager : MonoBehaviour
 
 
 
-        // 테스트
-        SetEnding("Stage Test", "Ending0", "엔딩입니다");
+        //// 테스트
+        //SetEnding("Stage Test", "Ending0", "엔딩입니다");
+    }
+
+    private void OnEnable()
+    {
+        int endingIndex = (int)GameManager.Instance.GetEndingType();
+        SetEnding(endingTitle[endingIndex], "Ending" + endingIndex, DataManager.Instance.endingList[endingIndex]);
     }
 
     public void SetEnding(string _stageTxt, string _endingImg, string _endingTxt)
@@ -85,6 +93,7 @@ public class EndingManager : MonoBehaviour
 
     public void GoMain()
     {
-        print("메인으로 이동");
+        GameManager.Instance.ChangeScene(GameManager.SCENE.MAIN);
+        GameManager.Instance.ResetGame();
     }
 }

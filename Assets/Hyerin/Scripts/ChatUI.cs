@@ -8,11 +8,13 @@ public class ChatUI : MonoBehaviour
     [SerializeField] ChatManager chatManager;
     [SerializeField] private Button exitBtn;
     [SerializeField] private GameObject notification;
+    [SerializeField] private GameObject notice;
 
     ChatData chatData;
 
     private bool isFirstSelect = true;
     private int chatroomIndex;
+    private int episodeIndex;
 
     private int answerNum;
 
@@ -34,9 +36,12 @@ public class ChatUI : MonoBehaviour
 
     private void OnEnable()
     {
+        episodeIndex = GameManager.Instance.GetEpisodeIndex();
         chatroomIndex = DataManager.Instance.chatroomList.IndexOf(GameManager.Instance.chatroom);
-        data = DataManager.Instance.GetChatList(GameManager.Instance.GetEpisodeIndex(), GameManager.Instance.chatroom);
+        data = DataManager.Instance.GetChatList(episodeIndex, GameManager.Instance.chatroom);
 
+        // 공지
+        chatManager.SetChatScreen(GameManager.Instance.chatroom, DataManager.Instance.noticeList[chatroomIndex][episodeIndex]);
 
         // 에피소드 후 갠톡
         if (GameManager.Instance.IsEpisodeFinished())
@@ -53,7 +58,14 @@ public class ChatUI : MonoBehaviour
             }
         }
 
-        GameManager.Instance.ClearReadCount();
+        //// 팀단톡 아니면 읽음표시 비활성화
+        //List<Text> readCountTxt = GameManager.Instance.GetReadCountTxt();
+        //for(int i=0; i<readCountTxt.Count; i++)
+        //{
+        //    readCountTxt[i].enabled = (chatroomIndex==0);
+        //}
+
+        //GameManager.Instance.ClearReadCount();
     }
 
     private void Update()
@@ -62,7 +74,6 @@ public class ChatUI : MonoBehaviour
         if (chatroomIndex == 0)
         {
             int recentIndex = GameManager.Instance.currentChatIndex;
-            int episodeIndex = GameManager.Instance.GetEpisodeIndex();
 
             // 선택지에서 세이브
             if (GameManager.Instance.selectIndex[episodeIndex].Contains(GameManager.Instance.GetChatData().index))
@@ -190,7 +201,7 @@ public class ChatUI : MonoBehaviour
         int answerNum = Random.Range(0, 2);
         this.answerNum = answerNum;
 
-        string answer = DataManager.Instance.GetChatData(GameManager.Instance.GetEpisodeIndex(),
+        string answer = DataManager.Instance.GetChatData(episodeIndex,
             GameManager.Instance.currentChatIndex - 1).text;
         string wrong = chatData.text;
         if (answerNum == 0) chatManager.SetAnswer(answer, wrong);
@@ -243,7 +254,7 @@ public class ChatUI : MonoBehaviour
 
     private IEnumerator PersonalTalkCrt()
     {
-        List<ChatData> personalChat = DataManager.Instance.GetChatList(GameManager.Instance.GetEpisodeIndex(), DataManager.DATATYPE.PERSONAL);
+        List<ChatData> personalChat = DataManager.Instance.GetChatList(episodeIndex, DataManager.DATATYPE.PERSONAL);
         for(int i=0; i<personalChat.Count; i++)
         {
             bool isSend = (personalChat[i].character == "아트님");

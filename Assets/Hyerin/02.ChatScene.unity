@@ -668,6 +668,33 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &744217843 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3062557957965081692, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+  m_PrefabInstance: {fileID: 744217828}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &744217844 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8230766209157430126, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+  m_PrefabInstance: {fileID: 744217828}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &744217845 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1185395699, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+  m_PrefabInstance: {fileID: 744217828}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &781349857
 GameObject:
   m_ObjectHideFlags: 0
@@ -919,6 +946,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
+      propertyPath: topic
+      value: 
+      objectReference: {fileID: 744217845}
+    - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
       propertyPath: ChatBar
       value: 
       objectReference: {fileID: 744217837}
@@ -934,6 +965,10 @@ PrefabInstance:
       propertyPath: midPanel
       value: 
       objectReference: {fileID: 744217838}
+    - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
+      propertyPath: roomName
+      value: 
+      objectReference: {fileID: 744217844}
     - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
       propertyPath: scrollBar
       value: 
@@ -1162,6 +1197,7 @@ MonoBehaviour:
   chatManager: {fileID: 1250389341}
   exitBtn: {fileID: 744217829}
   notification: {fileID: 1256490186}
+  notice: {fileID: 744217843}
 --- !u!114 &1849275866
 MonoBehaviour:
   m_ObjectHideFlags: 0

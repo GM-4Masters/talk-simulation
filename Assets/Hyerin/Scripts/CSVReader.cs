@@ -51,12 +51,14 @@ public static class CSVReader
         string value = str;
         value = value.TrimStart(TRIM_CHARS).TrimEnd(TRIM_CHARS).Replace("\\", "");
 
-        //value = value.Replace("<br>", "\n");
-        //value = value.Replace("<c>", ",");
-
         if (value.Contains("unCheck"))
         {
-            value = value.Substring(19);
+            int index=0;
+            while (value[index] != '>')
+            {
+                index++;
+            }
+            value = value.Substring(index+1);
         }
 
         value = value.Replace("<br>", "\n");

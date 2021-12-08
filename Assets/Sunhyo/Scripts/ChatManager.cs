@@ -27,6 +27,9 @@ public class ChatManager : MonoBehaviour
         BubbleScript Bubble = Instantiate(isSend ? playerBubble : npcBubble).GetComponent<BubbleScript>();
         Bubble.transform.SetParent(contentRect.transform, false);
 
+        // 프로필사진 지정
+        if(!isSend) Bubble.ProfileImage.sprite = Resources.Load<Sprite>("Sprites/Profile/" + name);
+
         // ReadCount 텍스트 컴포넌트 저장
         if (!isSend) GameManager.Instance.AddReadCountTxt(Bubble.gameObject.transform.GetChild(2).GetChild(2).GetComponent<Text>());
 
