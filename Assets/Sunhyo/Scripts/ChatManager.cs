@@ -32,6 +32,9 @@ public class ChatManager : MonoBehaviour
         BubbleScript Bubble = Instantiate(isSend ? playerBubble : npcBubble).GetComponent<BubbleScript>();
         Bubble.transform.SetParent(contentRect.transform, false);
 
+        // ReadCount 텍스트 컴포넌트 저장
+        if (!isSend) GameManager.Instance.AddReadCountTxt(Bubble.gameObject.transform.GetChild(2).GetChild(2).GetComponent<Text>());
+
         if(!isSend)
         {
             Bubble.NameText.text = name;
@@ -162,13 +165,13 @@ public class ChatManager : MonoBehaviour
 
 
 
-    public void PrintAside(string text)
+    public void PrintAside(string text, float waitTime)
     {
         answerState.text = "독백";
-        StartCoroutine(PrintLikeKeyboard(text));
+        StartCoroutine(PrintLikeKeyboard(text,waitTime));
     }
 
-    IEnumerator PrintLikeKeyboard(string _text)
+    IEnumerator PrintLikeKeyboard(string _text, float waitTime)
     {
         for (int i = 0; i < _text.Length + 1; i++)
         {
@@ -176,6 +179,8 @@ public class ChatManager : MonoBehaviour
 
             ChatText.text = _text.Substring(0, i);
         }
+
+        yield return new WaitForSeconds(waitTime);
 
         StartCoroutine(DeleteString(_text));
     }
