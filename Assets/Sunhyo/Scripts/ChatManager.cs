@@ -18,7 +18,14 @@ public class ChatManager : MonoBehaviour
     public Text ChatText;
     public Text answerState;
 
+    public GameObject DatePrefab;
+
     private string first, second, third;
+
+    void Start()
+    {
+        SetDate("테테스트");
+    }
 
     public void Chat(bool isSend, string text, string s_time, string name = "", string readCount = "", string img = "", string fileName = "")
     {
@@ -49,6 +56,12 @@ public class ChatManager : MonoBehaviour
 
         scrollBar.value = 0f;
         Fit(Bubble.BoxRect);
+    }
+
+    public void SetDate(string date)
+    {
+        Instantiate(DatePrefab).transform.SetParent(contentRect.transform, false);
+        DatePrefab.transform.GetChild(0).GetComponent<Text>().text = date;
     }
 
     void Fit(RectTransform Rect) => LayoutRebuilder.ForceRebuildLayoutImmediate(Rect);

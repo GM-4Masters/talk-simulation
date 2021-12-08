@@ -47,3 +47,12 @@ MonoBehaviour:
   npcBubble: {fileID: 355508247916768731, guid: a4e81566eeeeae241a1ba935f62e6366, type: 3}
   contentRect: {fileID: 0}
   scrollBar: {fileID: 0}
+  roomName: {fileID: 0}
+  topic: {fileID: 0}
+  ChatScreen: {fileID: 0}
+  bottomPanel: {fileID: 0}
+  ChatBar: {fileID: 0}
+  Choices: {fileID: 0}
+  ChatText: {fileID: 0}
+  answerState: {fileID: 0}
+  DatePrefab: {fileID: 137921466519926356, guid: b4de98048c1c89d49b14e3a994287626, type: 3}

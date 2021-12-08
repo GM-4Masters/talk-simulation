@@ -1224,6 +1224,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1911020099}
     - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
+      propertyPath: DatePrefab
+      value: 
+      objectReference: {fileID: 137921466519926356, guid: b4de98048c1c89d49b14e3a994287626, type: 3}
+    - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
       propertyPath: bottomPanel
       value: 
       objectReference: {fileID: 1875452128}
