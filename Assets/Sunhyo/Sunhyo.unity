@@ -217,6 +217,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: -30
       objectReference: {fileID: 0}
+    - target: {fileID: 974381701574183669, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_Size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1338414896783537054, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_MovementType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1486318014151632779, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 30
@@ -259,6 +267,30 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4245693222018460925, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752119000576515733, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752119000576515733, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752119000576515733, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752119000576515733, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752119000576515733, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752119000576515733, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_AnchorMin.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4752119000576515733, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
