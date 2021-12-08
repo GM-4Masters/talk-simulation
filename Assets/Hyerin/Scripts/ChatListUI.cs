@@ -56,7 +56,6 @@ public class ChatListUI : MonoBehaviour
                 SetChatroomBlock(index, data[i]);
             }
 
-            Debug.Log("lastlist:"+GameManager.Instance.lastListIndex);
             chatData = DataManager.Instance.GetChatData(episodeIndex, GameManager.Instance.lastListIndex);
             SetGroupTalkUI();
         }
@@ -88,6 +87,7 @@ public class ChatListUI : MonoBehaviour
             // 에피소드 1에서만 카톡 알림음 
             //if (episodeIndex == 0 || chatroomIndex != 0) GameManager.Instance.PlayAnotherAudio(GameManager.AUDIO.NOTIFICATION);
             SetChatroomBlock(0, chatData);
+            Debug.Log("lastlist:" + GameManager.Instance.lastListIndex);
             GameManager.Instance.lastListIndex = GameManager.Instance.currentChatIndex;
         }
     }

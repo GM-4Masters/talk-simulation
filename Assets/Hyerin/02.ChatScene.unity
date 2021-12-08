@@ -593,6 +593,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1346486328}
     - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
+      propertyPath: answerState
+      value: 
+      objectReference: {fileID: 1584913260}
+    - target: {fileID: 7494817573068749620, guid: 7cfd047f8ddc7654b90243cb273f13dc, type: 3}
       propertyPath: bottomPanel
       value: 
       objectReference: {fileID: 1346486327}
@@ -719,9 +723,25 @@ PrefabInstance:
     m_TransformParent: {fileID: 168711522}
     m_Modifications:
     - target: {fileID: 302622819, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 302622819, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 776573013}
+      objectReference: {fileID: 168711523}
+    - target: {fileID: 302622819, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Select
+      objectReference: {fileID: 0}
+    - target: {fileID: 302622819, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ChatUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 302622819, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 982396989, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
       propertyPath: m_FontData.m_Font
       value: 
@@ -739,9 +759,25 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 12800000, guid: 45f5725def1dc5d46bc3a5bcb006c5ec, type: 3}
     - target: {fileID: 1707218332, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1707218332, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 776573013}
+      objectReference: {fileID: 168711523}
+    - target: {fileID: 1707218332, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Select
+      objectReference: {fileID: 0}
+    - target: {fileID: 1707218332, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ChatUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1707218332, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2038492210, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
       propertyPath: m_FontData.m_Font
       value: 

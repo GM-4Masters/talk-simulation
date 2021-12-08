@@ -189,7 +189,7 @@ public class ChatManager : MonoBehaviour
     }
 
 
-    void SetAnswer(string _first = "", string _second = "", string _third = "")
+    public void SetAnswer(string _first = "", string _second = "", string _third = "")
     {
         first = _first;
         second = _second;
