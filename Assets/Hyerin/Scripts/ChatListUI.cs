@@ -11,10 +11,27 @@ public class ChatListUI : MonoBehaviour
     private Button[] chatListBtn;
     private Text[] nameTxt, previewTxt, timeTxt, dateTxt;
 
+
+
+
+
+    // 선효수정
+    [SerializeField]
+    private GameObject[] readIcon;
+    private Text[] readTxt;
+    private bool[] isEntered;
+
+
+
+
+
+
     ChatData chatData;
 
     private void Awake()
     {
+        Debug.Log("언제 실행되지");
+
         GameObject content = scrollView.transform.GetChild(0).GetChild(0).gameObject;
         int size = content.transform.childCount;
         chatListBlock = new GameObject[size];
@@ -23,6 +40,22 @@ public class ChatListUI : MonoBehaviour
         previewTxt = new Text[size];
         timeTxt = new Text[size];
         dateTxt = new Text[size];
+
+        
+
+
+
+        //선효수정
+        readIcon = new GameObject[size];
+        readTxt = new Text[size];
+        isEntered = new bool[size];
+
+
+
+
+
+
+
         for (int i = 0; i < chatListBtn.Length; i++)
         {
             chatListBlock[i] = content.transform.GetChild(i).gameObject;
@@ -34,6 +67,16 @@ public class ChatListUI : MonoBehaviour
             previewTxt[i] = chatListBlock[i].transform.GetChild(2).GetComponent<Text>();
             timeTxt[i] = chatListBlock[i].transform.GetChild(3).GetComponent<Text>();
             dateTxt[i] = chatListBlock[i].transform.GetChild(4).GetComponent<Text>();
+
+
+
+
+            //선효수정
+            readIcon[i] = chatListBlock[i].transform.GetChild(0).transform.GetChild(0).gameObject;
+            readTxt[i] = readIcon[i].transform.GetChild(0).GetComponent<Text>();
+            isEntered[i] = ChatListManager.Instance.GetIsEntered(i);
+            
+            readIcon[i].SetActive(isEntered[i]);
         }
     }
 
@@ -98,7 +141,7 @@ public class ChatListUI : MonoBehaviour
     //        return true;
     //    }
     //    else return false;
-    //}
+    //};
 
     // 하나의 채팅방 블럭 세팅
     private void SetChatroomBlock(int index, ChatData lastData)
@@ -108,10 +151,15 @@ public class ChatListUI : MonoBehaviour
         previewTxt[index].text = lastData.text;
         timeTxt[index].text = lastData.time;
         dateTxt[index].text = lastData.date;
+        readIcon[index].SetActive(!isEntered[index]);
+        Debug.Log("안읽음 아이콘 상태 : " + isEntered[index]);
     }
 
     private void EnterChatroom(int index)
     {
+        Debug.Log("인덱스 : " + index);
+        ChatListManager.Instance.SetIsEntered(index, true);
+        Debug.Log("안읽음 아이콘 제거");
         GameManager.Instance.ChangeChatroom(index);
         GameManager.Instance.ChangeScene(GameManager.SCENE.INGAME);
     }
