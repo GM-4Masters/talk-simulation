@@ -7,6 +7,7 @@ public class ChatUI : MonoBehaviour
 {
     [SerializeField] ChatManager chatManager;
     [SerializeField] private Button exitBtn;
+    [SerializeField] private GameObject notification;
 
     ChatData chatData;
 
@@ -15,24 +16,43 @@ public class ChatUI : MonoBehaviour
 
     private int answerNum;
 
+    private Image notificationBg;
+    private Text notiName, notiText;
+
     private List<ChatData> data;
 
     string talkable = "∆¿¿Â¥‘,±ËªÍ»£,π˜¬˘øÏ,¿Ã√§∏∞,æˆ∏∂,GameMasters,4MasterTalk";
+
+    private IEnumerator notificationCrt;
+
+    private void Awake()
+    {
+        notificationBg = notification.transform.GetComponent<Image>();
+        notiName = notification.transform.GetChild(0).GetComponent<Text>();
+        notiText = notification.transform.GetChild(1).GetComponent<Text>();
+    }
 
     private void OnEnable()
     {
         chatroomIndex = DataManager.Instance.chatroomList.IndexOf(GameManager.Instance.chatroom);
         data = DataManager.Instance.GetChatList(GameManager.Instance.GetEpisodeIndex(), GameManager.Instance.chatroom);
 
-        // ∆¿¥‹≈Â ¿Ãø‹¿« ≈ÂπÊ ºº∆√
-        if (chatroomIndex != 0)
+
+        // ø°««º“µÂ »ƒ ∞µ≈Â
+        if (GameManager.Instance.IsEpisodeFinished())
         {
+            StartCoroutine(PersonalTalkCrt());
+        }
+        else if (chatroomIndex != 0)
+        {
+            // ∆¿¥‹≈Â ¿Ãø‹¿« ≈ÂπÊ ºº∆√
             for (int i = 0; i < data.Count; i++)
             {
                 chatData = data[i];
                 SetUI();
             }
         }
+
         GameManager.Instance.ClearReadCount();
     }
 
@@ -56,8 +76,23 @@ public class ChatUI : MonoBehaviour
                 for(int i=GameManager.Instance.lastChatIndex+1; i<=recentIndex; i++)
                 {
                     chatData = DataManager.Instance.GetChatData(episodeIndex, i);
-                    Play();
-                    SetUI();
+                    if (chatData.chatroom != "∆¿¥‹≈Â")
+                    {
+                        if (!GameManager.Instance.IsRight(chatData.index))
+                        {
+                            // ∆¿ ¥‹≈Âø°º≠ ∞≥¿Œ≈Â¿ª πﬁæ“¿ª ∂ß
+                            ShowNotification();
+                        }                            
+                        if (recentIndex == GameManager.Instance.mainEpisodeCnt[episodeIndex] - 1)
+                        {
+                            StartCoroutine(WaitAndExit());
+                        }
+                    }
+                    else
+                    {
+                        Play();
+                        SetUI();
+                    }
                     GameManager.Instance.lastChatIndex = recentIndex;
                 }
             }
@@ -177,7 +212,6 @@ public class ChatUI : MonoBehaviour
     {
         GameManager.Instance.groupTalkUnChecked += value;
         List<Text> readCountTxt = GameManager.Instance.GetReadCountTxt();
-        Debug.Log(readCountTxt.Count);
         for(int i=0; i<readCountTxt.Count; i++)
         {
             string numStr = (GameManager.Instance.groupTalkUnChecked == 0) ? 
@@ -192,9 +226,75 @@ public class ChatUI : MonoBehaviour
         //isDisplayed = false;
         if (chatroomIndex == 0) return;
 
+        // ¥Ÿ¿Ω ø°««º“µÂ
+        if (GameManager.Instance.IsEpisodeFinished()) GameManager.Instance.GoToNextEpisode();
+
         // ∆©≈‰∏ÆæÛ øœ∑·
         if (chatroomIndex == 5 && !GameManager.Instance.IsTutorialFinished()) GameManager.Instance.FinishTutorial();
 
         GameManager.Instance.ChangeScene(GameManager.SCENE.CHATLIST);
+    }
+
+
+
+
+
+
+
+    private IEnumerator PersonalTalkCrt()
+    {
+        List<ChatData> personalChat = DataManager.Instance.GetChatList(GameManager.Instance.GetEpisodeIndex(), DataManager.DATATYPE.PERSONAL);
+        for(int i=0; i<personalChat.Count; i++)
+        {
+            bool isSend = (personalChat[i].character == "æ∆∆Æ¥‘");
+            chatData = personalChat[i];
+            SetUI();
+
+            //if(i<3) chatManager.Chat(
+            //    isSend,
+            //    personalChat[i].text, chatData.time, chatData.character, GameManager.Instance.groupTalkUnChecked.ToString(), image, fileName);
+        }
+        yield return null;
+    }
+
+    private IEnumerator WaitAndExit()
+    {
+        yield return new WaitForSeconds(2f);
+
+        GameManager.Instance.ChangeScene(GameManager.SCENE.CHATLIST);
+    }
+
+    // æÀ∏≤ 
+    public void ShowNotification()
+    {
+        notiName.text = chatData.character;
+        notiText.text = chatData.text;
+
+        if (notificationCrt != null) StopCoroutine(notificationCrt);
+        notificationCrt = NotificationCrt();
+        StartCoroutine(notificationCrt);
+    }
+
+    private IEnumerator NotificationCrt()
+    {
+        // ≈ı∏Ìµµ 0(0.5√ ) -> 0.5(1√ ¥Î±‚) -> (0.5√ )0 ¿∏∑Œ æÀ∏≤√¢ ∂ÁøÚ
+        float time = 0f;
+        while (time < 0.5f)
+        {
+            time += Time.deltaTime;
+            notificationBg.color = new Color(1f, 1f, 1f, time);
+            notiName.color = new Color(0f, 0f, 0f, time * 2f);
+            notiText.color = new Color(0f, 0f, 0f, time * 2f);
+            yield return null;
+        }
+        yield return new WaitForSeconds(0.5f);
+        while (time > 0f)
+        {
+            time -= Time.deltaTime;
+            notificationBg.color = new Color(1f, 1f, 1f, time);
+            notiName.color = new Color(0f, 0f, 0f, time * 2f);
+            notiText.color = new Color(0f, 0f, 0f, time * 2f);
+            yield return null;
+        }
     }
 }

@@ -30,8 +30,6 @@ public class ChatListUI : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("언제 실행되지");
-
         GameObject content = scrollView.transform.GetChild(0).GetChild(0).gameObject;
         int size = content.transform.childCount;
         chatListBlock = new GameObject[size];
@@ -41,7 +39,8 @@ public class ChatListUI : MonoBehaviour
         timeTxt = new Text[size];
         dateTxt = new Text[size];
 
-        
+
+
 
 
 
@@ -49,8 +48,6 @@ public class ChatListUI : MonoBehaviour
         readIcon = new GameObject[size];
         readTxt = new Text[size];
         isEntered = new bool[size];
-
-
 
 
 
@@ -73,9 +70,9 @@ public class ChatListUI : MonoBehaviour
 
             //선효수정
             readIcon[i] = chatListBlock[i].transform.GetChild(0).transform.GetChild(0).gameObject;
-            readTxt[i] = readIcon[i].transform.GetChild(0).GetComponent<Text>();
+            //readTxt[i] = readIcon[i].transform.GetChild(0).GetComponent<Text>();
             isEntered[i] = ChatListManager.Instance.GetIsEntered(i);
-            
+
             readIcon[i].SetActive(isEntered[i]);
         }
     }
@@ -92,6 +89,7 @@ public class ChatListUI : MonoBehaviour
         // 현재 에피소드의 서브 채팅방 및 단톡방 세팅
         if (episodeIndex >= 0)
         {
+            // 서브 채팅방
             List<ChatData> data = DataManager.Instance.GetChatList(episodeIndex, DataManager.DATATYPE.SUB);
             for (int i = 0; i < data.Count; i++)
             {
@@ -99,8 +97,20 @@ public class ChatListUI : MonoBehaviour
                 SetChatroomBlock(index, data[i]);
             }
 
+            // 단톡방
             chatData = DataManager.Instance.GetChatData(episodeIndex, GameManager.Instance.currentChatIndex);
             SetChatroomBlock(0, chatData);
+
+            // 에피소드 끝났다면 갠톡 세팅
+            if (GameManager.Instance.IsEpisodeFinished())
+            {
+                SetChatroomBlock(0, DataManager.Instance.GetChatData(0, GameManager.Instance.currentChatIndex - 2));
+
+                List<ChatData> personalChat = DataManager.Instance.GetChatList(episodeIndex, DataManager.DATATYPE.PERSONAL);
+                Debug.Log("personalchat[0]:" + personalChat[0].text);
+                int index = DataManager.Instance.chatroomList.IndexOf(personalChat[0].chatroom);
+                SetChatroomBlock(index, personalChat[personalChat.Count - 4]);
+            }
         }
 
         // 튜토리얼은 항상 보임
@@ -141,7 +151,7 @@ public class ChatListUI : MonoBehaviour
     //        return true;
     //    }
     //    else return false;
-    //};
+    //}
 
     // 하나의 채팅방 블럭 세팅
     private void SetChatroomBlock(int index, ChatData lastData)

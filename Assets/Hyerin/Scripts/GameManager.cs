@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     private ChatData currentChatData;                       // 출력할 채팅 데이터(세이브포인트: 선택지 이후)
 
     private bool isTutorialFinished = false;               // 튜토리얼 완료 여부
+    private bool isEpisodeFinished = false;                 // 현재 에피소드 완료 여부(완료 후 채팅 띄우기 위해; 에피소드 전환 시 리셋)
     private bool isWait;                                    // 대기
 
     public int selectedNum = -1;                            // 현재 에피소드에서 선택지 거친 횟수
@@ -31,7 +32,7 @@ public class GameManager : MonoBehaviour
     public int groupTalkUnChecked = 3;                      // (단톡방 한정)안읽은 사람 수
     private int episodeIndex = -1;                          // 현재 에피소드 번호
     private float spendTime;                                // 흐른 시간(채팅 출력 후 리셋)
-    public string chatroom = null;                          // 현재 입장한 채팅방 이름(팀단톡,김선효,벅찬우,이채린,엄마,튜토리얼,GameMasters)
+    public string chatroom = null;                          // 현재 입장한 채팅방 이름(팀단톡,김산호,벅찬우,이채린,엄마,튜토리얼,GameMasters)
     private SCENE currentScene;                             // 현재 씬 타입
     public ENDING ending = ENDING.NORMAL;                   // 엔딩
 
@@ -39,8 +40,15 @@ public class GameManager : MonoBehaviour
                                                                 new List<int>{19,49,69,90,126 },
                                                                 new List<int>{29,47,67,90,115,136 }};
 
-    public int[,] epGood = { { 10, 12 }, { 34, 39 }, { 69, 70 }, { 83, 87 } };
-    public int[,] epBad = { { 13, 17 }, { 40, 46 }, { 71, 82 }, { 88, 89 } };
+    //임시
+    public int[,,] epGood = {   { { 10, 12 }, { 34, 39 }, { 69, 70 }, { 83, 87 } },
+                                { { 10, 12 }, { 34, 39 }, { 69, 70 }, { 83, 87 } },
+                                { { 10, 12 }, { 34, 39 }, { 69, 70 }, { 83, 87 } },};
+    public int[,,] epBad = {    { { 13, 17 }, { 40, 46 }, { 71, 82 }, { 88, 89 } },
+                                { { 13, 17 }, { 40, 46 }, { 71, 82 }, { 88, 89 } },
+                                { { 13, 17 }, { 40, 46 }, { 71, 82 }, { 88, 89 } } };
+
+    public List<int> mainEpisodeCnt;
 
     public enum ENDING { BAD1, BAD2, BAD3, NORMAL, }
     public enum AUDIO { MAIN, INGAME, BAD, NORMAL, NOTIFICATION }
@@ -89,13 +97,13 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         spendTime += Time.deltaTime;
-
         // 조건 만족했고
         if (episodeIndex >= 0 && !isWait && spendTime >= currentChatData.dt)
         {
             // 현재 채팅방에 있거나 채팅방에 없어도 실행되는 데이터일 경우
             int characterIndex = DataManager.Instance.characterList.IndexOf(currentChatData.character);
-            if (currentScene == SCENE.INGAME || (characterIndex > 3 && characterIndex < 13))
+            if (currentChatIndex<mainEpisodeCnt[episodeIndex] &&
+                currentScene == SCENE.INGAME || (characterIndex > 3 && characterIndex < 13))
             {
                 GoNext();
             }
@@ -104,31 +112,41 @@ public class GameManager : MonoBehaviour
 
     public void GoNext()
     {
-        currentChatIndex++;
-
         // 현재 에피소드 끝까지 진행되었을 경우 - 다음 에피소드로 이동 or 게임오버
-        if (currentChatIndex == DataManager.Instance.GetEpisodeSize(episodeIndex))
+        if (currentChatIndex == DataManager.Instance.GetEpisodeSize(episodeIndex)-1)
         {
-            if (ending == ENDING.NORMAL) GoToNextEpisode();
-            else ChangeScene(SCENE.ENDING);
+            if (ending == ENDING.NORMAL)
+            {
+                if (!isEpisodeFinished)
+                {
+                    isEpisodeFinished = true;
+                }
+            }
+            else if(currentScene != SCENE.ENDING) ChangeScene(SCENE.ENDING);
+        }
+        else if(currentChatIndex < mainEpisodeCnt[episodeIndex]-1)
+        {
+            currentChatIndex++;
+            currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
+            spendTime = 0f;
+
+            string waitCharacter = "독백,선택지";
+            if (waitCharacter.Contains(currentChatData.character)) isWait = true;
+            //if (currentScene != SCENE.INGAME && currentChatData.character == "아트님") isWait = true;
         }
 
-        currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
-        spendTime = 0f;
-
-        string waitCharacter = "독백,선택지";
-        if (waitCharacter.Contains(currentChatData.character)) isWait = true;
-        //if (currentScene != SCENE.INGAME && currentChatData.character == "아트님") isWait = true;
     }
 
     public void GoToNextEpisode()
     {
+        ChangeScene(SCENE.CHATLIST);
         episodeIndex++;
         currentChatIndex = 0;
         currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
         lastChatIndex = -1;
         selectedNum = -1;
         groupTalkUnChecked = 3;
+        isEpisodeFinished = false;
     }
 
     public void Save()
@@ -149,7 +167,7 @@ public class GameManager : MonoBehaviour
             selectedNum = PlayerPrefs.GetInt("SelectedNum");
             ending = (ENDING)PlayerPrefs.GetInt("Ending");
             groupTalkUnChecked = PlayerPrefs.GetInt("GroupTalkUnChecked");
-            if (ending != ENDING.NORMAL) currentChatIndex += (epBad[selectedNum,0]-epGood[selectedNum,0]);
+            if (ending != ENDING.NORMAL) currentChatIndex += (epBad[episodeIndex,selectedNum,0]-epGood[episodeIndex, selectedNum,0]);
             lastChatIndex = currentChatIndex-1;
         }
     }
@@ -196,13 +214,18 @@ public class GameManager : MonoBehaviour
         if (ending == ENDING.NORMAL)
         {
             //Debug.Log("index:" + index + ",epbad[0]"+epBad[selectedNum,0]+",epbad[1]:"+epb);
-            return (index < epBad[selectedNum, 0] || index > epBad[selectedNum, 1]);
+            return (index < epBad[episodeIndex, selectedNum, 0] || index > epBad[episodeIndex, selectedNum, 1]);
         }
         else
         {
             //Debug.Log("index:" + index + ",ep");
-            return (index < epGood[selectedNum, 0] || index > epGood[selectedNum, 1]);
+            return (index < epGood[episodeIndex, selectedNum, 0] || index > epGood[episodeIndex, selectedNum, 1]);
         }
+    }
+
+    public bool IsEpisodeFinished()
+    {
+        return isEpisodeFinished;
     }
 
     public bool IsTutorialFinished()

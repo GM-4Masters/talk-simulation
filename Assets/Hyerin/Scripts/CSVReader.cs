@@ -30,7 +30,7 @@ public static class CSVReader
             if (values[0] != "") entry.index = (int)Convert(values[0]);
             //entry.index = (int)Convert(values[0]);
             entry.chatroom = (string)Convert(values[1]);
-            if(values[2]!="") entry.dt = (float)Convert(values[2]);
+            if (values[2]!="") entry.dt = (float)Convert(values[2]);
             //entry.dt = (float)Convert(values[2]);
             entry.date = (string)Convert(values[3]);
             entry.time = (string)Convert(values[4]);

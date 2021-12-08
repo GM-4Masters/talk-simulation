@@ -10,6 +10,7 @@ public class DataManager : MonoBehaviour
     private List<List<ChatData>> chatDataList = new List<List<ChatData>>();
     private List<List<ChatData>> subDataList = new List<List<ChatData>>();
     private List<ChatData> tutorial = new List<ChatData>();
+    private List<List<ChatData>> personalChat = new List<List<ChatData>>();
 
     public List<string> characterList = new List<string>(){ 
         "독백", "선택지", "게임시작", "아트님", "시스템", "입장", "퇴장",
@@ -20,7 +21,7 @@ public class DataManager : MonoBehaviour
         "팀단톡", "김선효", "벅찬우", "이채린", "엄마", "튜토리얼", "GameMasters"
     };
 
-    public enum DATATYPE { MAIN, SUB, TUTORIAL }
+    public enum DATATYPE { MAIN, SUB, PERSONAL, TUTORIAL }
 
     public static DataManager Instance
     {
@@ -54,16 +55,39 @@ public class DataManager : MonoBehaviour
 
     private void LoadData()
     {
-        //chatDataList.Add(CSVReader.Read("chatdata"));
-        chatDataList.Add(CSVReader.Read("chatData_ep1"));
-        chatDataList.Add(CSVReader.Read("chatData_ep2"));
-        chatDataList.Add(CSVReader.Read("chatData_ep3"));
-
-        subDataList.Add(CSVReader.Read("chatData_SubEp1Str"));
-        subDataList.Add(CSVReader.Read("chatData_SubEp2Str"));
-        subDataList.Add(CSVReader.Read("chatData_SubEp3Str"));
-
         tutorial = CSVReader.Read("chatData_tutorial");
+
+        for (int i = 0; i < 3; i++)
+        {
+            chatDataList.Add(CSVReader.Read("chatData_ep" + (i+1)));
+
+            if (i != 2)
+            {
+                //개인톡 따로 저장
+                for(int j=0; j<chatDataList[i].Count; j++)
+                {
+                    personalChat.Add(new List<ChatData>());
+                    if (chatDataList[i][j].chatroom != "팀단톡")
+                    {
+                        personalChat[i].Add(chatDataList[i][j]);
+                    }
+                }
+
+                // 에피소드 1,2 마지막 개인톡 3개 잘라냄
+                for (int j = 0; j < 3; j++)
+                {
+                    chatDataList[i].RemoveAt(chatDataList[i].Count - 1);
+                }
+            }
+
+            subDataList.Add(CSVReader.Read("chatData_SubEp" + (i + 1) + "Str"));
+        }
+
+        GameManager.Instance.mainEpisodeCnt = new List<int>();
+        for (int i = 0; i < 3; i++)
+        {
+            GameManager.Instance.mainEpisodeCnt.Add(GetEpisodeSize(i));
+        }
     }
     
     public int GetEpisodeSize(int episodeIndex)
@@ -76,6 +100,7 @@ public class DataManager : MonoBehaviour
         List<ChatData> data = new List<ChatData>();
         if (type == DATATYPE.MAIN) data = chatDataList[episodeIndex];
         else if (type == DATATYPE.SUB) data = subDataList[episodeIndex];
+        else if (type == DATATYPE.PERSONAL) data = personalChat[episodeIndex];
         else data = tutorial;
 
         return data;
