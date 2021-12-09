@@ -657,7 +657,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 50, y: 0}
-  m_SizeDelta: {x: 350, y: 130}
+  m_SizeDelta: {x: 417.5, y: 130}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &1342454353504154093
 CanvasRenderer:
@@ -716,7 +716,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 0}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 0}
@@ -785,11 +785,11 @@ RectTransform:
   m_Father: {fileID: 8199653109237622319}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -30, y: 0}
-  m_SizeDelta: {x: 198.44, y: 71.7}
-  m_Pivot: {x: 1, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 137.29999, y: 0.000061035156}
+  m_SizeDelta: {x: 500, y: 71.7}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &1769439016411352416
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -825,13 +825,13 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 72
-    m_Alignment: 4
+    m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uADF8\uB8F9\uCC44\uD305 4"
+  m_Text: 4MasterTalk
 --- !u!1 &1404478119176693582
 GameObject:
   m_ObjectHideFlags: 0

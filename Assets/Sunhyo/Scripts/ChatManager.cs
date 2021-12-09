@@ -97,8 +97,9 @@ public class ChatManager : MonoBehaviour
 
         ChatBar.SetActive(false);
 
-        ChatScreen.anchoredPosition = new Vector2(0, 145);
-        ChatScreen.sizeDelta = new Vector2(0, 880);
+        ChatScreen.offsetMin = new Vector2(0, 490);   // stretch left, stretch bottom
+        //ChatScreen.anchoredPosition = new Vector2(0, 145);
+        //ChatScreen.sizeDelta = new Vector2(0, 880);
         bottomPanel.sizeDelta = new Vector2(0, 640);
 
         Text firstTxt = Choices.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>();
@@ -116,8 +117,9 @@ public class ChatManager : MonoBehaviour
     {
         Choices.SetActive(false);
 
-        ChatScreen.anchoredPosition = new Vector2(0, -100);
-        ChatScreen.sizeDelta = new Vector2(0, 1370);
+        ChatScreen.offsetMin = new Vector2(0, 0);
+        //ChatScreen.anchoredPosition = new Vector2(0, -100);
+        //ChatScreen.sizeDelta = new Vector2(0, 1370);
         bottomPanel.sizeDelta = new Vector2(0, 150);
 
         ChatBar.SetActive(true);
@@ -163,7 +165,7 @@ public class ChatManager : MonoBehaviour
     {
         for (int i = 0; i < _text.Length + 1; i++)
         {
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSeconds(0.05f/GameManager.Instance.GetPlaySpeed());
 
             ChatText.text = _text.Substring(0, i);
         }
@@ -177,7 +179,7 @@ public class ChatManager : MonoBehaviour
     {
         for (int i = _text.Length; i >= 0; i--)
         {
-            yield return new WaitForSeconds(0.02f);
+            yield return new WaitForSeconds(0.02f/GameManager.Instance.GetPlaySpeed());
 
             ChatText.text = _text.Substring(0, i);
         }

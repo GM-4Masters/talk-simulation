@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class ChatListManager : MonoBehaviour
 {
-    [SerializeField]
     private bool[] isEntered = new bool[20];
 
     private static ChatListManager instance;
@@ -31,6 +30,14 @@ public class ChatListManager : MonoBehaviour
         else if(instance != this)
         {
             Destroy(gameObject);
+        }
+    }
+
+    public void ResetState()
+    {
+        for(int i=0; i<isEntered.Length; i++)
+        {
+            isEntered[i] = false;
         }
     }
 

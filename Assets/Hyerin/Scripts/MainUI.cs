@@ -5,12 +5,11 @@ using UnityEngine.UI;
 
 public class MainUI : MonoBehaviour
 {
-    [SerializeField] private Button loginBtn;
     [SerializeField] private GameObject popupPanel;
 
-    private GameObject[] popup; // credit, reset
+    private GameObject[] popup;
 
-    private enum POPUP { CREDIT, RESET }
+    private enum POPUP { CREDIT, RESET, EXIT }
 
     private void Awake()
     {
@@ -25,6 +24,16 @@ public class MainUI : MonoBehaviour
     public void Login()
     {
         GameManager.Instance.ChangeScene(GameManager.SCENE.CHATLIST);
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
+    }
+
+    public void ShowExitPopup()
+    {
+        ShowPopup(POPUP.EXIT);
     }
 
     public void ShowCredit()

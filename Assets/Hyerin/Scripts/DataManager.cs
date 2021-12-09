@@ -19,7 +19,7 @@ public class DataManager : MonoBehaviour
 
     public List<string> chatroomList = new List<string>()
     {
-        "ÆÀ´ÜÅå", "±è»êÈ£", "¹÷Âù¿ì", "ÀÌÃ¤¸°", "¾ö¸¶", "Æ©Åä¸®¾ó", "GameMasters"
+        "ÆÀ´ÜÅå", "±è»êÈ£", "¹÷Âù¿ì", "ÀÌÃ¤¸°", "¾ö¸¶", "4MasterTalk", "GameMasters"
     };
 
     public List<List<string>> noticeList = new List<List<string>>();
@@ -62,6 +62,11 @@ public class DataManager : MonoBehaviour
         LoadNoticeData("noticedata");
         LoadEndingData("endingdata");
         LoadChoiceData("choicedata");
+    }
+
+    public string GetPersonalChatName(int episodeNum)
+    {
+        return personalChat[episodeNum][0].character;
     }
 
     public bool IsLastBadEndingChat(int index)

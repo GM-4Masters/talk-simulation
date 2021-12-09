@@ -47,8 +47,8 @@ public class ChatUI : MonoBehaviour
             chatManager.SetChatScreen(chatroomName, DataManager.Instance.noticeList[chatroomIndex][episodeIndex]);
         }
 
-        // 에피소드 후 갠톡
-        if (GameManager.Instance.IsEpisodeFinished())
+        // 현재 채팅방이 에피소드 관련 갠톡이면 에피소드 후 갠톡 진행
+        if (GameManager.Instance.IsEpisodeFinished() && GameManager.Instance.chatroom.Equals(DataManager.Instance.GetPersonalChatName(episodeIndex)))
         {
             StartCoroutine(PersonalTalkCrt());
         }
@@ -237,10 +237,16 @@ public class ChatUI : MonoBehaviour
     public void ExitChatroom()
     {
         //isDisplayed = false;
-        if (chatroomIndex == 0) return;
+        if (chatroomIndex == 0)
+        {
+            // ㅎㅎ못나가!
+            // 에피소드 진행 중에는 나갈 수 없다는 팝업메세지 1초간 보였다가 사라지게 하기
+            return;
+        }
 
-        // 다음 에피소드
-        if (GameManager.Instance.IsEpisodeFinished()) GameManager.Instance.GoToNextEpisode();
+        // 갠톡 종료 후 다음 에피소드
+        if (GameManager.Instance.IsEpisodeFinished() &&
+            GameManager.Instance.chatroom.Equals(DataManager.Instance.GetPersonalChatName(episodeIndex))) GameManager.Instance.GoToNextEpisode();
 
         // 튜토리얼 완료
         if (chatroomIndex == 5 && !GameManager.Instance.IsTutorialFinished()) GameManager.Instance.FinishTutorial();
@@ -262,6 +268,7 @@ public class ChatUI : MonoBehaviour
         for(int i=0; i<personalChat.Count; i++)
         {
             bool isSend = (personalChat[i].character == "아트님");
+            if (i > 2) yield return new WaitForSeconds(chatData.dt);
             chatData = personalChat[i];
             SetUI();
 
@@ -298,7 +305,7 @@ public class ChatUI : MonoBehaviour
         while (time < 0.5f)
         {
             time += Time.deltaTime;
-            notificationBg.color = new Color(1f, 1f, 1f, time);
+            notificationBg.color = new Color(1f, 1f, 1f, time*1.7f);
             notiName.color = new Color(0f, 0f, 0f, time * 2f);
             notiText.color = new Color(0f, 0f, 0f, time * 2f);
             yield return null;
@@ -307,7 +314,7 @@ public class ChatUI : MonoBehaviour
         while (time > 0f)
         {
             time -= Time.deltaTime;
-            notificationBg.color = new Color(1f, 1f, 1f, time);
+            notificationBg.color = new Color(1f, 1f, 1f, time*1.7f);
             notiName.color = new Color(0f, 0f, 0f, time * 2f);
             notiText.color = new Color(0f, 0f, 0f, time * 2f);
             yield return null;

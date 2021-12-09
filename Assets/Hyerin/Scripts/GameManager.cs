@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 {
     [Header("수치 설정")]
     [Range(1, 10)]
-    public int monologueSpeed;   // 독백 타이핑 속도
+    public int speed;   // 채팅 진행 속도
 
     private static GameManager instance;
     private AudioClip[] audioClip = new AudioClip[3];
@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
     public int groupTalkUnChecked = 3;                      // (단톡방 한정)안읽은 사람 수
     private int episodeIndex = -1;                          // 현재 에피소드 번호
     private float spendTime;                                // 흐른 시간(채팅 출력 후 리셋)
-    public string chatroom = null;                          // 현재 입장한 채팅방 이름(팀단톡,김산호,벅찬우,이채린,엄마,튜토리얼,GameMasters)
+    public string chatroom = null;                          // 현재 입장한 채팅방 이름(팀단톡,김산호,벅찬우,이채린,엄마,4MasterTalk,GameMasters)
     private SCENE currentScene;                             // 현재 씬 타입
     public ENDING ending = ENDING.NORMAL;                   // 엔딩
 
@@ -90,10 +90,11 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        spendTime += Time.deltaTime;
+        spendTime += (Time.deltaTime*speed);
 
-        //배드엔딩 마지막 채팅 출력이 끝났다면 채팅출력 중단하고 페이드아웃
-        if(!isEpisodeFinished && ending!=ENDING.NORMAL && DataManager.Instance.IsLastBadEndingChat(currentChatData.index))
+        //(배드엔딩 마지막 또는 에피소드2의 마지막) 채팅 출력이 끝났다면 채팅출력 중단하고 페이드아웃
+        if((!isEpisodeFinished && ending!=ENDING.NORMAL && DataManager.Instance.IsLastBadEndingChat(currentChatData.index)) ||
+           (!isEpisodeFinished && episodeIndex==2 && currentChatIndex>=mainEpisodeCnt[episodeIndex]-1) )
         {
             isEpisodeFinished = true;
             StartCoroutine(FadeoutCrt());
@@ -104,7 +105,7 @@ public class GameManager : MonoBehaviour
             // 현재 채팅방에 있거나 채팅방에 없어도 실행되는 데이터일 경우
             int characterIndex = DataManager.Instance.characterList.IndexOf(currentChatData.character);
             if (currentChatIndex<mainEpisodeCnt[episodeIndex] &&
-                (chatroom == currentChatData.chatroom || (characterIndex > 3 && characterIndex < 13)))
+                (chatroom == currentChatData.chatroom || (characterIndex > 2 && characterIndex < 13)))
             {
                 GoNext();
             }
@@ -174,7 +175,6 @@ public class GameManager : MonoBehaviour
             int boolValue = ChatListManager.Instance.GetIsEntered(i) ? 1 : 0;
             PlayerPrefs.SetInt("IsEntered_" + i, boolValue);
         }
-        Debug.Log("Saved:"+currentChatIndex);
     }
 
     public void Load()
@@ -191,6 +191,7 @@ public class GameManager : MonoBehaviour
             lastChatIndex = currentChatIndex-1;
             currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
             //Debug.Log("episodeIndex:" + episodeIndex+ ", currentChatIndex:"+ currentChatIndex);
+            Debug.Log("Loaded:" + currentChatIndex + ", ending:" + ending);
 
             // 각 채팅방의 읽음 상태 불러오기
             for (int i = 0; i < DataManager.Instance.chatroomList.Count; i++)
@@ -207,6 +208,7 @@ public class GameManager : MonoBehaviour
 
         PlayerPrefs.DeleteAll();
         isTutorialFinished = false;
+        isEpisodeFinished = false;
         isWait = false;
         episodeIndex = -1;
         spendTime = 0f;
@@ -214,6 +216,12 @@ public class GameManager : MonoBehaviour
         lastChatIndex = -1;
         choiceNum = -1;
         ending = ENDING.NORMAL;
+        ChatListManager.Instance.ResetState();
+    }
+
+    public float GetPlaySpeed()
+    {
+        return speed;
     }
 
     public int GetEpisodeIndex()

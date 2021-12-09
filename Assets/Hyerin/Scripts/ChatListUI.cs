@@ -70,17 +70,24 @@ public class ChatListUI : MonoBehaviour
 
 
 
-            //선효수정
+            ////선효수정
             readIcon[i] = chatListBlock[i].transform.GetChild(0).transform.GetChild(0).gameObject;
-            //readTxt[i] = readIcon[i].transform.GetChild(0).GetComponent<Text>();
-            isEntered[i] = ChatListManager.Instance.GetIsEntered(i);
+            ////readTxt[i] = readIcon[i].transform.GetChild(0).GetComponent<Text>();
+            //isEntered[i] = ChatListManager.Instance.GetIsEntered(i);
 
-            readIcon[i].SetActive(isEntered[i]);
+            //readIcon[i].SetActive(isEntered[i]);
         }
     }
 
     private void OnEnable()
     {
+        for (int i = 0; i < chatListBtn.Length; i++)
+        {
+            isEntered[i] = ChatListManager.Instance.GetIsEntered(i);
+
+            readIcon[i].SetActive(isEntered[i]);
+        }
+
         int episodeIndex = GameManager.Instance.GetEpisodeIndex();
 
         // 단톡방 이모지, 채팅방 아이콘 세팅
@@ -106,26 +113,37 @@ public class ChatListUI : MonoBehaviour
             }
 
             // 단톡방
-            chatData = DataManager.Instance.GetChatData(episodeIndex, GameManager.Instance.currentChatIndex);
-            Debug.Log(GameManager.Instance.currentChatIndex);
-            SetChatroomBlock(0, chatData);
-
-            // 에피소드 끝났다면 갠톡 세팅
-            chatListBlock[0].GetComponent<Button>().interactable = !GameManager.Instance.IsEpisodeFinished();
-            if (GameManager.Instance.IsEpisodeFinished())
-            {
-                SetChatroomBlock(0, DataManager.Instance.GetLastChat(GameManager.Instance.ending == GameManager.ENDING.NORMAL, episodeIndex));
-
-                List<ChatData> personalChat = DataManager.Instance.GetChatList(episodeIndex, DataManager.DATATYPE.PERSONAL);
-                //Debug.Log("personalchat[0]:" + personalChat[0].chatroom);
-                int index = DataManager.Instance.chatroomList.IndexOf(personalChat[0].chatroom);
-                SetChatroomBlock(index, personalChat[personalChat.Count - 4]);
-            }
+            timeTxt[0].text = "";
+            dateTxt[0].text = "";
+            previewTxt[0].text = "";
+            Debug.Log(GameManager.Instance.lastChatIndex);
+            StartCoroutine(LateUpdateCrt(episodeIndex));
 
         }
 
         // 튜토리얼은 항상 보임
         SetChatroomBlock(5, DataManager.Instance.GetLastTutorial());
+    }
+
+    // 늦은 업데이트
+    private IEnumerator LateUpdateCrt(int episodeIndex)
+    {
+        yield return new WaitForSeconds(0.001f);
+        chatData = GameManager.Instance.GetChatData();
+        if (chatData.character == "게임시작") chatData = DataManager.Instance.GetChatData(episodeIndex, GameManager.Instance.currentChatIndex-1);
+        SetChatroomBlock(0, chatData);
+
+        // 에피소드 끝났다면 갠톡 세팅
+        chatListBlock[0].GetComponent<Button>().interactable = !GameManager.Instance.IsEpisodeFinished();
+        if (GameManager.Instance.IsEpisodeFinished())
+        {
+            SetChatroomBlock(0, DataManager.Instance.GetLastChat(GameManager.Instance.ending == GameManager.ENDING.NORMAL, episodeIndex));
+
+            List<ChatData> personalChat = DataManager.Instance.GetChatList(episodeIndex, DataManager.DATATYPE.PERSONAL);
+            //Debug.Log("personalchat[0]:" + personalChat[0].chatroom);
+            int index = DataManager.Instance.chatroomList.IndexOf(personalChat[0].chatroom);
+            SetChatroomBlock(index, personalChat[personalChat.Count - 4]);
+        }
     }
 
     //private void Update()
@@ -147,7 +165,7 @@ public class ChatListUI : MonoBehaviour
     //    }
     //}
 
-    public bool SetGroupTalkUI()
+    public void SetGroupTalkUI()
     {
         // 말풍선 형태 데이터일때만 화면 갱신
         int characterIndex = DataManager.Instance.characterList.IndexOf(chatData.character);
@@ -156,17 +174,13 @@ public class ChatListUI : MonoBehaviour
             // 에피소드 1에서만 카톡 알림음 
             //if (episodeIndex == 0 || chatroomIndex != 0) GameManager.Instance.PlayAnotherAudio(GameManager.AUDIO.NOTIFICATION);
             SetChatroomBlock(0, chatData);
-            return true;
         }
-        else return false;
     }
 
     // 하나의 채팅방 블럭 세팅
     private void SetChatroomBlock(int index, ChatData lastData)
     {
         chatListBlock[index].SetActive(true);
-        if (index == 0) nameTxt[index].text = "4Master팀";
-        else nameTxt[index].text = lastData.character;
         previewTxt[index].text = lastData.text;
         timeTxt[index].text = lastData.time;
         dateTxt[index].text = lastData.date;

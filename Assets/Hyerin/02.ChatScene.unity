@@ -235,7 +235,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 687594182, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 687594183, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
       propertyPath: m_FontData.m_Font
@@ -285,17 +285,21 @@ PrefabInstance:
       propertyPath: m_FontData.m_Font
       value: 
       objectReference: {fileID: 12800000, guid: 77419f6b702edea418854cbb7767e780, type: 3}
-    - target: {fileID: 269317802690870215, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 198.44
+    - target: {fileID: 150781094810421334, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 269317802690870215, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+    - target: {fileID: 150781094810421334, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 150781094810421334, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 71.7
+      value: -200
       objectReference: {fileID: 0}
-    - target: {fileID: 269317802690870215, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -30
+    - target: {fileID: 150781094810421334, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -100
       objectReference: {fileID: 0}
     - target: {fileID: 1486318014151632779, guid: 206f2f6dc965ce14bbfdc47f4984de44, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -1241,10 +1245,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1080, y: 1920}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
