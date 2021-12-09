@@ -229,7 +229,7 @@ PrefabInstance:
     - target: {fileID: 9154471258986593491, guid: 5f145ce1052c4ca4087878ae41c155d8, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 7ae0b52ddc201d2469bc125d6a0224c6, type: 3}
+      objectReference: {fileID: 21300000, guid: 4310add7cdb979342a7e0c90d64bb7ac, type: 3}
     - target: {fileID: 9154471259991991389, guid: 5f145ce1052c4ca4087878ae41c155d8, type: 3}
       propertyPath: m_Text
       value: "\uC548\uB155\uD558\uC138\uC694~"
@@ -793,7 +793,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 5e92e70292c464a4787e34c98461336a, type: 3}
     m_FontSize: 45
     m_FontStyle: 0
     m_BestFit: 0
@@ -980,7 +980,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 5e92e70292c464a4787e34c98461336a, type: 3}
     m_FontSize: 45
     m_FontStyle: 0
     m_BestFit: 0
@@ -1059,7 +1059,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 5e92e70292c464a4787e34c98461336a, type: 3}
     m_FontSize: 45
     m_FontStyle: 0
     m_BestFit: 0
@@ -1500,7 +1500,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 5e92e70292c464a4787e34c98461336a, type: 3}
     m_FontSize: 45
     m_FontStyle: 0
     m_BestFit: 0
@@ -1654,7 +1654,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 5e92e70292c464a4787e34c98461336a, type: 3}
     m_FontSize: 45
     m_FontStyle: 0
     m_BestFit: 0
@@ -1663,8 +1663,8 @@ MonoBehaviour:
     m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_HorizontalOverflow: 1
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: "\uCC44\uD305"
 --- !u!222 &1369025659
@@ -1803,6 +1803,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1565040459}
   - component: {fileID: 1565040460}
+  - component: {fileID: 1565040461}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -1833,8 +1834,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000057012774}
-  m_SizeDelta: {x: 0, y: 300}
+  m_AnchoredPosition: {x: 0, y: 0.00014078271}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1565040460
 MonoBehaviour:
@@ -1862,6 +1863,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1565040461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565040458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &1590592706
 GameObject:
   m_ObjectHideFlags: 0
@@ -1920,7 +1935,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 5e92e70292c464a4787e34c98461336a, type: 3}
     m_FontSize: 45
     m_FontStyle: 0
     m_BestFit: 0
@@ -2023,8 +2038,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 227646646}
   m_HandleRect: {fileID: 227646645}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.9999967
+  m_Value: 0.99999976
+  m_Size: 0.7118644
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2339,6 +2354,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scrollView: {fileID: 507095689}
+  readIcon: []
 --- !u!1001 &1940382948
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2604,7 +2620,7 @@ PrefabInstance:
     - target: {fileID: 9154471258986593491, guid: 5f145ce1052c4ca4087878ae41c155d8, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 7ae0b52ddc201d2469bc125d6a0224c6, type: 3}
+      objectReference: {fileID: 21300000, guid: 9006bd6466711794d8a317b8441b67e9, type: 3}
     - target: {fileID: 9154471259991991389, guid: 5f145ce1052c4ca4087878ae41c155d8, type: 3}
       propertyPath: m_Text
       value: "\uC548\uB155\uD558\uC138\uC694~"
