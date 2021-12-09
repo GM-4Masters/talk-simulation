@@ -153,9 +153,6 @@ public class ChatManager : MonoBehaviour
 
 
 
-
-
-
     public void PrintAside(string text, float waitTime)
     {
         answerState.text = "µ¶¹é";
@@ -166,7 +163,7 @@ public class ChatManager : MonoBehaviour
     {
         for (int i = 0; i < _text.Length + 1; i++)
         {
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.05f);
 
             ChatText.text = _text.Substring(0, i);
         }
@@ -180,7 +177,7 @@ public class ChatManager : MonoBehaviour
     {
         for (int i = _text.Length; i >= 0; i--)
         {
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSeconds(0.02f);
 
             ChatText.text = _text.Substring(0, i);
         }
