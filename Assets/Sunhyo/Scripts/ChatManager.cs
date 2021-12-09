@@ -20,7 +20,7 @@ public class ChatManager : MonoBehaviour
 
     public GameObject DatePrefab;
 
-    private string first, second, third;
+    private string first, second;
 
     public void Chat(bool isSend, string text, string s_time, string name = "", string readCount = "", string img = "", string fileName = "")
     {
@@ -103,11 +103,9 @@ public class ChatManager : MonoBehaviour
 
         Text firstTxt = Choices.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>();
         Text secondTxt = Choices.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
-        Text thirdTxt = Choices.transform.GetChild(2).transform.GetChild(0).GetComponent<Text>();
 
         firstTxt.text = first;
         secondTxt.text = second;
-        thirdTxt.text = third;
 
         Choices.SetActive(true);
 
@@ -135,11 +133,6 @@ public class ChatManager : MonoBehaviour
     public void SecondChoice()
     {
         print("두번째");
-    }
-
-    public void ThirdChoice()
-    {
-        print("세번째");
     }
 
 
@@ -205,11 +198,10 @@ public class ChatManager : MonoBehaviour
     }
 
 
-    public void SetAnswer(string _first = "", string _second = "", string _third = "")
+    public void SetAnswer(string _first = "", string _second = "")
     {
         first = _first;
         second = _second;
-        third = _third;
 
         ChatText.text = "ANSWER";
         answerState.text = "답장";
