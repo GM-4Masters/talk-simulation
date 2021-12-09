@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class ChatListUI : MonoBehaviour
 {
     [SerializeField] private GameObject scrollView;
+    [SerializeField] private Image groupTalkEmoji; // 단톡방 이모지
+    [SerializeField] private Image alertIcon;    // 채팅목록 상단 알림 아이콘
 
     private GameObject[] chatListBlock;
     private Button[] chatListBtn;
@@ -79,12 +81,18 @@ public class ChatListUI : MonoBehaviour
 
     private void OnEnable()
     {
+        int episodeIndex = GameManager.Instance.GetEpisodeIndex();
+
+        // 단톡방 이모지, 채팅방 아이콘 세팅
+        groupTalkEmoji.sprite = Resources.Load<Sprite>("Sprites/Emoji/"+ Mathf.Clamp(episodeIndex+1,0,5));
+        groupTalkEmoji.SetNativeSize();
+        string offState = ((episodeIndex >= 1) ? " OFF" : "");
+        alertIcon.sprite = Resources.Load<Sprite>("Sprites/CHAT/ALERT"+offState);
+
         for (int i = 0; i < chatListBlock.Length; i++)
         {
             chatListBlock[i].SetActive(false);
         }
-
-        int episodeIndex = GameManager.Instance.GetEpisodeIndex();
 
         // 현재 에피소드의 서브 채팅방 및 단톡방 세팅
         if (episodeIndex >= 0)

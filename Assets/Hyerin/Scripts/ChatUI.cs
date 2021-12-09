@@ -43,7 +43,8 @@ public class ChatUI : MonoBehaviour
         // ∞¯¡ˆ
         if (episodeIndex >= 0)
         {
-            chatManager.SetChatScreen(GameManager.Instance.chatroom, DataManager.Instance.noticeList[chatroomIndex][episodeIndex]);
+            string chatroomName = ((chatroomIndex == 0) ? "4Master∆¿" : GameManager.Instance.chatroom); 
+            chatManager.SetChatScreen(chatroomName, DataManager.Instance.noticeList[chatroomIndex][episodeIndex]);
         }
 
         // ø°««º“µÂ »ƒ ∞µ≈Â
