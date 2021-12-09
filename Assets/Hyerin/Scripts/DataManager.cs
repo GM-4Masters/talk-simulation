@@ -64,6 +64,39 @@ public class DataManager : MonoBehaviour
         LoadChoiceData("choicedata");
     }
 
+    public bool IsLastBadEndingChat(int index)
+    {
+        int episodeIndex = GameManager.Instance.GetEpisodeIndex();
+        return (index == badChoiceList[episodeIndex][badChoiceList[episodeIndex].Count-1][1]);
+    }
+
+    public bool IsSavePoint(int index, int episodeNum)
+    {
+        if (GameManager.Instance.choiceNum < 0) return false;
+        return (goodChoiceList[episodeNum][GameManager.Instance.choiceNum][0] == index);
+    }
+
+    public ChatData GetLastChat(bool isGoodEnding, int episodeNum)
+    {
+        // 엔딩에 따라 끝지점 지정
+        int last = (isGoodEnding) ?
+            goodChoiceList[episodeNum][GameManager.Instance.choiceNum][1]:
+            badChoiceList[episodeNum][GameManager.Instance.choiceNum][1];
+
+        // 끝에서부터 뒤로가면서 끝지점 인덱스보다 작고, 단톡방이고, 사람인 가장 첫 데이터 리턴
+        for (int i=chatDataList[episodeNum].Count-1; i>=0 ; i--)
+        {
+            int charIndex = characterList.IndexOf(chatDataList[episodeNum][i].character);
+            if(chatDataList[episodeNum][i].index<last &&
+                chatDataList[episodeNum][i].chatroom==chatroomList[0] &&
+                (charIndex>6 || charIndex == 3))
+            {
+                return chatDataList[episodeNum][i];
+            }
+        }
+        return null;
+    }
+
     private void LoadNoticeData(string fileName)
     {
         TextAsset txt = Resources.Load(fileName) as TextAsset;

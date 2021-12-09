@@ -59,20 +59,18 @@ public class ChatUI : MonoBehaviour
                 chatData = data[i];
                 SetUI();
             }
+
         }
 
-        // 팀단톡 아니면 읽음표시 비활성화
-        List<Text> readCountTxt = GameManager.Instance.GetReadCountTxt();
-        for (int i = 0; i < readCountTxt.Count; i++)
+        if (chatroomIndex != 0)
         {
-            readCountTxt[i].enabled = (chatroomIndex == 0);
+            // 팀단톡 아니면 읽음표시 비활성화
+            List<Text> readCountTxt = GameManager.Instance.GetReadCountTxt();
+            for (int i = 0; i < readCountTxt.Count; i++)
+            {
+                readCountTxt[i].enabled = false;
+            }
         }
-
-    }
-
-    private void OnDisable()
-    {
-        GameManager.Instance.ClearReadCount();
     }
 
     private void Update()
@@ -82,12 +80,6 @@ public class ChatUI : MonoBehaviour
         {
             int recentIndex = GameManager.Instance.currentChatIndex;
 
-            // 선택지에서 세이브
-            if (GameManager.Instance.selectIndex[episodeIndex].Contains(GameManager.Instance.GetChatData().index))
-            {
-                GameManager.Instance.Save();
-            }
-
             // 새로 출력할 것이 생겼다면
             if (GameManager.Instance.lastChatIndex != recentIndex)
             {
@@ -96,7 +88,7 @@ public class ChatUI : MonoBehaviour
                     chatData = DataManager.Instance.GetChatData(episodeIndex, i);
                     if (chatData.chatroom != "팀단톡")
                     {
-                        if (!GameManager.Instance.IsRight(chatData.index))
+                        if (GameManager.Instance.IsRight(chatData.index))
                         {
                             // 팀 단톡에서 개인톡을 받았을 때
                             ShowNotification();
@@ -161,8 +153,10 @@ public class ChatUI : MonoBehaviour
             if (chatData.text.Contains("image")) image = chatData.text;
             else if (chatData.text.Contains("+")) fileName = chatData.text.Substring(1);
             else text = chatData.text;
-            
-            chatManager.Chat(isSend, text, chatData.time, chatData.character, GameManager.Instance.groupTalkUnChecked.ToString(), image, fileName);
+
+            string numStr = (GameManager.Instance.groupTalkUnChecked == 0) ?
+                "" : GameManager.Instance.groupTalkUnChecked.ToString();
+            chatManager.Chat(isSend, text, chatData.time, chatData.character, numStr, image, fileName);
         }
 
         switch (chatData.character)
@@ -220,9 +214,9 @@ public class ChatUI : MonoBehaviour
     public void Select(int selected)
     {
         chatManager.CloseChoice();
-        Debug.Log("selected:"+selected+", answer:"+answerNum);
+        //Debug.Log("selected:"+selected+", answer:"+answerNum);
         if (answerNum != selected) GameManager.Instance.ChangeEnding();
-        GameManager.Instance.selectedNum++;
+        GameManager.Instance.choiceNum++;
         GameManager.Instance.ChangeWaitFlag(false);
     }
 
@@ -251,6 +245,7 @@ public class ChatUI : MonoBehaviour
         if (chatroomIndex == 5 && !GameManager.Instance.IsTutorialFinished()) GameManager.Instance.FinishTutorial();
 
         GameManager.Instance.Save();
+        GameManager.Instance.ClearReadCount();
         GameManager.Instance.ChangeScene(GameManager.SCENE.CHATLIST);
     }
 
@@ -280,6 +275,7 @@ public class ChatUI : MonoBehaviour
     {
         yield return new WaitForSeconds(2f);
 
+        GameManager.Instance.ClearReadCount();
         GameManager.Instance.ChangeScene(GameManager.SCENE.CHATLIST);
     }
 

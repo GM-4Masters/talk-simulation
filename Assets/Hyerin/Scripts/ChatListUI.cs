@@ -99,42 +99,45 @@ public class ChatListUI : MonoBehaviour
 
             // ¥‹≈ÂπÊ
             chatData = DataManager.Instance.GetChatData(episodeIndex, GameManager.Instance.currentChatIndex);
+            Debug.Log(GameManager.Instance.currentChatIndex);
             SetChatroomBlock(0, chatData);
 
             // ø°««º“µÂ ≥°≥µ¥Ÿ∏È ∞µ≈Â ºº∆√
+            chatListBlock[0].GetComponent<Button>().interactable = !GameManager.Instance.IsEpisodeFinished();
             if (GameManager.Instance.IsEpisodeFinished())
             {
-                SetChatroomBlock(0, DataManager.Instance.GetChatData(0, GameManager.Instance.currentChatIndex - 2));
+                SetChatroomBlock(0, DataManager.Instance.GetLastChat(GameManager.Instance.ending == GameManager.ENDING.NORMAL, episodeIndex));
 
                 List<ChatData> personalChat = DataManager.Instance.GetChatList(episodeIndex, DataManager.DATATYPE.PERSONAL);
-                Debug.Log("personalchat[0]:" + personalChat[0].text);
+                //Debug.Log("personalchat[0]:" + personalChat[0].chatroom);
                 int index = DataManager.Instance.chatroomList.IndexOf(personalChat[0].chatroom);
                 SetChatroomBlock(index, personalChat[personalChat.Count - 4]);
             }
+
         }
 
         // ∆©≈‰∏ÆæÛ¿∫ «◊ªÛ ∫∏¿”
         SetChatroomBlock(5, DataManager.Instance.GetLastTutorial());
     }
 
-    private void Update()
-    {
-        int episodeIndex = GameManager.Instance.GetEpisodeIndex();
-        if (episodeIndex >= 0)
-        {
-            chatListBlock[0].SetActive(true);
-            int recentIndex = GameManager.Instance.currentChatIndex;
+    //private void Update()
+    //{
+    //    int episodeIndex = GameManager.Instance.GetEpisodeIndex();
+    //    if (episodeIndex >= 0)
+    //    {
+    //        chatListBlock[0].SetActive(true);
+    //        int recentIndex = GameManager.Instance.currentChatIndex;
 
-            if (GameManager.Instance.lastChatIndex != recentIndex)
-            {
-                for (int i = GameManager.Instance.lastChatIndex; i <= recentIndex; i++)
-                {
-                    chatData = DataManager.Instance.GetChatData(episodeIndex, recentIndex);
-                    SetGroupTalkUI();
-                }
-            }
-        }
-    }
+    //        if (GameManager.Instance.lastChatIndex != recentIndex)
+    //        {
+    //            for (int i = GameManager.Instance.lastChatIndex; i <= recentIndex; i++)
+    //            {
+    //                chatData = DataManager.Instance.GetChatData(episodeIndex, recentIndex);
+    //                SetGroupTalkUI();
+    //            }
+    //        }
+    //    }
+    //}
 
     public bool SetGroupTalkUI()
     {
@@ -154,7 +157,8 @@ public class ChatListUI : MonoBehaviour
     private void SetChatroomBlock(int index, ChatData lastData)
     {
         chatListBlock[index].SetActive(true);
-        nameTxt[index].text = lastData.character;
+        if (index == 0) nameTxt[index].text = "4Master∆¿";
+        else nameTxt[index].text = lastData.character;
         previewTxt[index].text = lastData.text;
         timeTxt[index].text = lastData.time;
         dateTxt[index].text = lastData.date;
@@ -164,7 +168,7 @@ public class ChatListUI : MonoBehaviour
 
     private void EnterChatroom(int index)
     {
-        Debug.Log("¿Œµ¶Ω∫ : " + index);
+        //Debug.Log("¿Œµ¶Ω∫ : " + index);
         ChatListManager.Instance.SetIsEntered(index, true);
         //Debug.Log("æ»¿–¿Ω æ∆¿Ãƒ‹ ¡¶∞≈");
         GameManager.Instance.ChangeChatroom(index);

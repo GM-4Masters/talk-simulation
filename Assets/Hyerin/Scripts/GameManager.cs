@@ -24,9 +24,9 @@ public class GameManager : MonoBehaviour
 
     private bool isTutorialFinished = false;               // 튜토리얼 완료 여부
     private bool isEpisodeFinished = false;                 // 현재 에피소드 완료 여부(완료 후 채팅 띄우기 위해; 에피소드 전환 시 리셋)
-    private bool isWait = false;                                    // 대기
+    private bool isWait = false;                            // 대기
 
-    public int selectedNum = -1;                            // 현재 에피소드에서 선택지 거친 횟수
+    public int choiceNum = -1;                            // 현재 에피소드에서 선택지 거친 횟수
     public int currentChatIndex = 0;                        // 현재 출력할 채팅 번호
     public int lastChatIndex = -1;                          // 가장 최근 출력한 채팅 번호
     public int groupTalkUnChecked = 3;                      // (단톡방 한정)안읽은 사람 수
@@ -35,23 +35,6 @@ public class GameManager : MonoBehaviour
     public string chatroom = null;                          // 현재 입장한 채팅방 이름(팀단톡,김산호,벅찬우,이채린,엄마,튜토리얼,GameMasters)
     private SCENE currentScene;                             // 현재 씬 타입
     public ENDING ending = ENDING.NORMAL;                   // 엔딩
-
-    public List<List<int>> selectIndex = new List<List<int>>(){ new List<int>{10, 34, 69},
-                                                                new List<int>{19,49,69,90,126 },
-                                                                new List<int>{29,47,67,90,115,136 }};
-
-    //List<int[]> good = new List<int[]>()
-    //{
-    //    { new[]{ 10,20 },new[]{ 10,20 },new[]{ 10,20 },new[]{ 10,20 } },
-    //};
-
-    ////임시
-    //public int[,,] epGood = {   { { 10, 12 }, { 34, 39 }, { 69, 70 }, { 83, 87 } },
-    //                            { { 10, 12 }, { 34, 39 }, { 69, 70 }, { 83, 87 } },
-    //                            { { 10, 12 }, { 34, 39 }, { 69, 70 }, { 83, 87 } },};
-    //public int[,,] epBad = {    { { 13, 17 }, { 40, 46 }, { 71, 82 }, { 88, 89 } },
-    //                            { { 13, 17 }, { 40, 46 }, { 71, 82 }, { 88, 89 } },
-    //                            { { 13, 17 }, { 40, 46 }, { 71, 82 }, { 88, 89 } } };
 
     public List<List<int[]>> goodChoiceList = new List<List<int[]>>();
     public List<List<int[]>> badChoiceList = new List<List<int[]>>();
@@ -108,8 +91,14 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         spendTime += Time.deltaTime;
-        // 조건 만족했고
-        if (episodeIndex >= 0 && !isWait && spendTime >= currentChatData.dt)
+
+        //배드엔딩 마지막 채팅 출력이 끝났다면 채팅출력 중단하고 페이드아웃
+        if(!isEpisodeFinished && ending!=ENDING.NORMAL && DataManager.Instance.IsLastBadEndingChat(currentChatData.index))
+        {
+            isEpisodeFinished = true;
+            StartCoroutine(FadeoutCrt());
+        }
+        else if (episodeIndex >= 0 && !isWait && spendTime >= currentChatData.dt)
         {
             // 에피소드 진행중이고
             // 현재 채팅방에 있거나 채팅방에 없어도 실행되는 데이터일 경우
@@ -120,6 +109,12 @@ public class GameManager : MonoBehaviour
                 GoNext();
             }
         }
+    }
+
+    private IEnumerator FadeoutCrt()
+    {
+        yield return new WaitForSeconds(2f);
+        ChangeScene(SCENE.ENDING);
     }
 
     public void GoNext()
@@ -138,6 +133,9 @@ public class GameManager : MonoBehaviour
         }
         else if(currentChatIndex < mainEpisodeCnt[episodeIndex]-1)
         {
+            // 선택지 지점이면 세이브
+            if (DataManager.Instance.IsSavePoint(currentChatData.index, episodeIndex)) Save();
+
             currentChatIndex++;
             currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
             spendTime = 0f;
@@ -156,7 +154,7 @@ public class GameManager : MonoBehaviour
         currentChatIndex = 0;
         currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
         lastChatIndex = -1;
-        selectedNum = -1;
+        choiceNum = -1;
         groupTalkUnChecked = 3;
         isEpisodeFinished = false;
         Save();
@@ -166,8 +164,7 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("Episode", episodeIndex);
         PlayerPrefs.SetInt("ChatIndex", currentChatIndex);
-        PlayerPrefs.SetInt("SelectedNum", selectedNum);
-        Debug.Log("selectedNum:" + selectedNum);
+        PlayerPrefs.SetInt("SelectedNum", choiceNum);
         PlayerPrefs.SetInt("Ending", (int)ending);
         PlayerPrefs.SetInt("GroupTalkUnChecked", groupTalkUnChecked);
 
@@ -177,6 +174,7 @@ public class GameManager : MonoBehaviour
             int boolValue = ChatListManager.Instance.GetIsEntered(i) ? 1 : 0;
             PlayerPrefs.SetInt("IsEntered_" + i, boolValue);
         }
+        Debug.Log("Saved:"+currentChatIndex);
     }
 
     public void Load()
@@ -185,11 +183,11 @@ public class GameManager : MonoBehaviour
         {
             episodeIndex = PlayerPrefs.GetInt("Episode");
             currentChatIndex = PlayerPrefs.GetInt("ChatIndex");
-            selectedNum = PlayerPrefs.GetInt("SelectedNum");
+            choiceNum = PlayerPrefs.GetInt("SelectedNum");
             ending = (ENDING)PlayerPrefs.GetInt("Ending");
-            //Debug.Log("ending:" + ending);
+            //Debug.Log("load_ending:" + ending);
             groupTalkUnChecked = PlayerPrefs.GetInt("GroupTalkUnChecked");
-            if (ending != ENDING.NORMAL) currentChatIndex += (badChoiceList[episodeIndex][selectedNum][0]-goodChoiceList[episodeIndex][selectedNum][0]);
+            if (ending != ENDING.NORMAL) currentChatIndex += (badChoiceList[episodeIndex][choiceNum][0]-goodChoiceList[episodeIndex][choiceNum][0]);
             lastChatIndex = currentChatIndex-1;
             currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
             //Debug.Log("episodeIndex:" + episodeIndex+ ", currentChatIndex:"+ currentChatIndex);
@@ -214,7 +212,7 @@ public class GameManager : MonoBehaviour
         spendTime = 0f;
         currentChatIndex = 0;
         lastChatIndex = -1;
-        selectedNum = -1;
+        choiceNum = -1;
         ending = ENDING.NORMAL;
     }
 
@@ -241,18 +239,27 @@ public class GameManager : MonoBehaviour
     // 현재 진행 흐름에 맞는 대화인지
     public bool IsRight(int index)
     {
-        if (selectedNum < 0) return true;
+        bool value = true;
+        if (choiceNum < 0) return value;
+
         // 배드엔딩 아닌경우 배드엔딩 채팅 범위에 속하지 않아야 함
         if (ending == ENDING.NORMAL)
         {
-            //Debug.Log("index:" + index + ",epbad[0]"+epBad[selectedNum,0]+",epbad[1]:"+epb);
-            return (index < badChoiceList[episodeIndex][selectedNum][0] || index > badChoiceList[episodeIndex][selectedNum][1]);
+            for(int i=0; i<badChoiceList[episodeIndex].Count; i++)
+            {
+                if (index >= badChoiceList[episodeIndex][i][0] && index <= badChoiceList[episodeIndex][i][1]) value = false;
+            }
+            //return (index < badChoiceList[episodeIndex][choiceNum][0] || index > badChoiceList[episodeIndex][choiceNum][1]);
         }
         else
         {
-            //Debug.Log("index:" + index + ",ep");
-            return (index < goodChoiceList[episodeIndex][selectedNum][0] || index > goodChoiceList[episodeIndex][selectedNum][1]);
+            for (int i = 0; i < goodChoiceList[episodeIndex].Count; i++)
+            {
+                if (index >= goodChoiceList[episodeIndex][i][0] && index <= goodChoiceList[episodeIndex][i][1]) value = false;
+            }
+            //return (index < goodChoiceList[episodeIndex][choiceNum][0] || index > goodChoiceList[episodeIndex][choiceNum][1]);
         }
+        return value;
     }
 
     public bool IsEpisodeFinished()

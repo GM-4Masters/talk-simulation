@@ -21,7 +21,7 @@ public class EndingManager : MonoBehaviour
 
     private Rect screen;
 
-    private string[] endingTitle = { "#1. Bad Ending", "#2. Bad Ending", "#3. Bad Ending", "#4. Good Ending" };
+    private string[] endingTitle = { "#4. Good Ending", "#1. Bad Ending", "#2. Bad Ending", "#3. Bad Ending" };
 
     public void Start()
     {
