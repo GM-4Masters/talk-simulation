@@ -25,6 +25,10 @@ public class DataManager : MonoBehaviour
     public List<List<string>> noticeList = new List<List<string>>();
     public List<string> endingList = new List<string>();
 
+    // 에피소드-선택지번호
+    public List<List<int[]>> goodChoiceList = new List<List<int[]>>();
+    public List<List<int[]>> badChoiceList = new List<List<int[]>>();
+
     public enum DATATYPE { MAIN, SUB, PERSONAL, TUTORIAL }
 
     public static DataManager Instance
@@ -57,6 +61,7 @@ public class DataManager : MonoBehaviour
         LoadChatData();
         LoadNoticeData("noticedata");
         LoadEndingData("endingdata");
+        LoadChoiceData("choicedata");
     }
 
     private void LoadNoticeData(string fileName)
@@ -64,7 +69,7 @@ public class DataManager : MonoBehaviour
         TextAsset txt = Resources.Load(fileName) as TextAsset;
         string[] lines = txt.text.Split('\n');
 
-        for (int i=0; i<4; i++)
+        for (int i=0; i<chatroomList.Count; i++)
         {
             List<string> data = new List<string>();
             for(int j=0; j<3; j++)
@@ -92,6 +97,35 @@ public class DataManager : MonoBehaviour
             }
             else endingTxt+=(line+"\n");
         }
+    }
+
+    private void LoadChoiceData(string fileName)
+    {
+        TextAsset txt = Resources.Load(fileName) as TextAsset;
+        string[] lines = txt.text.Split('\n');
+
+        List<int[]> data;
+        for(int i=0; i<3; i++)
+        {
+            data = new List<int[]>();
+            string[] goodChoices = lines[i].Split(' ');
+            for (int j=0; j<goodChoices.Length; j++)
+            {
+                string[] numbers = goodChoices[j].Split('~');
+                data.Add(new int[] { int.Parse(numbers[0]), int.Parse(numbers[1]) });
+            }
+            goodChoiceList.Add(data);
+
+            data = new List<int[]>();
+            string[] badChoices = lines[i + 4].Split(' ');
+            for (int j = 0; j < badChoices.Length; j++)
+            {
+                string[] numbers = badChoices[j].Split('~');
+                data.Add(new int[] { int.Parse(numbers[0]), int.Parse(numbers[1]) });
+            }
+            badChoiceList.Add(data);
+        }
+
     }
 
     private void LoadChatData()

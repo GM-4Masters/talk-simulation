@@ -41,7 +41,10 @@ public class ChatUI : MonoBehaviour
         data = DataManager.Instance.GetChatList(episodeIndex, GameManager.Instance.chatroom);
 
         // 공지
-        chatManager.SetChatScreen(GameManager.Instance.chatroom, DataManager.Instance.noticeList[chatroomIndex][episodeIndex]);
+        if (episodeIndex >= 0)
+        {
+            chatManager.SetChatScreen(GameManager.Instance.chatroom, DataManager.Instance.noticeList[chatroomIndex][episodeIndex]);
+        }
 
         // 에피소드 후 갠톡
         if (GameManager.Instance.IsEpisodeFinished())
@@ -58,14 +61,18 @@ public class ChatUI : MonoBehaviour
             }
         }
 
-        //// 팀단톡 아니면 읽음표시 비활성화
-        //List<Text> readCountTxt = GameManager.Instance.GetReadCountTxt();
-        //for(int i=0; i<readCountTxt.Count; i++)
-        //{
-        //    readCountTxt[i].enabled = (chatroomIndex==0);
-        //}
+        // 팀단톡 아니면 읽음표시 비활성화
+        List<Text> readCountTxt = GameManager.Instance.GetReadCountTxt();
+        for (int i = 0; i < readCountTxt.Count; i++)
+        {
+            readCountTxt[i].enabled = (chatroomIndex == 0);
+        }
 
-        //GameManager.Instance.ClearReadCount();
+    }
+
+    private void OnDisable()
+    {
+        GameManager.Instance.ClearReadCount();
     }
 
     private void Update()
@@ -243,6 +250,7 @@ public class ChatUI : MonoBehaviour
         // 튜토리얼 완료
         if (chatroomIndex == 5 && !GameManager.Instance.IsTutorialFinished()) GameManager.Instance.FinishTutorial();
 
+        GameManager.Instance.Save();
         GameManager.Instance.ChangeScene(GameManager.SCENE.CHATLIST);
     }
 

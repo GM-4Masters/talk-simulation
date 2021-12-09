@@ -41,6 +41,7 @@ public static class CSVReader
             }
             else entry.text = (string)Convert(values[6]);
 
+            //Debug.Log(entry.text);
             list.Add(entry);
         }
         return list;

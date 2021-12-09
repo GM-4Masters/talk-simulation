@@ -117,41 +117,38 @@ public class ChatListUI : MonoBehaviour
         SetChatroomBlock(5, DataManager.Instance.GetLastTutorial());
     }
 
-    //private void Update()
-    //{
-    //    int episodeIndex = GameManager.Instance.GetEpisodeIndex();
-    //    if (episodeIndex >= 0)
-    //    {
-    //        chatListBlock[0].SetActive(true);
-    //        int recentIndex = GameManager.Instance.currentChatIndex;
-    //        if (GameManager.Instance.lastListIndex != recentIndex)
-    //        {
-    //            for (int i = GameManager.Instance.lastListIndex; i <= recentIndex; i++)
-    //            {
-    //                chatData = DataManager.Instance.GetChatData(episodeIndex, recentIndex);
-    //                if (SetGroupTalkUI())
-    //                {
-    //                    Debug.Log(i + "번째로 리스트 갱신");
-    //                    GameManager.Instance.lastListIndex = i;
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
+    private void Update()
+    {
+        int episodeIndex = GameManager.Instance.GetEpisodeIndex();
+        if (episodeIndex >= 0)
+        {
+            chatListBlock[0].SetActive(true);
+            int recentIndex = GameManager.Instance.currentChatIndex;
 
-    //public bool SetGroupTalkUI()
-    //{
-    //    // 말풍선 형태 데이터일때만 화면 갱신
-    //    int characterIndex = DataManager.Instance.characterList.IndexOf(chatData.character);
-    //    if (characterIndex > 6 || characterIndex == 3)
-    //    {
-    //        // 에피소드 1에서만 카톡 알림음 
-    //        //if (episodeIndex == 0 || chatroomIndex != 0) GameManager.Instance.PlayAnotherAudio(GameManager.AUDIO.NOTIFICATION);
-    //        SetChatroomBlock(0, chatData);
-    //        return true;
-    //    }
-    //    else return false;
-    //}
+            if (GameManager.Instance.lastChatIndex != recentIndex)
+            {
+                for (int i = GameManager.Instance.lastChatIndex; i <= recentIndex; i++)
+                {
+                    chatData = DataManager.Instance.GetChatData(episodeIndex, recentIndex);
+                    SetGroupTalkUI();
+                }
+            }
+        }
+    }
+
+    public bool SetGroupTalkUI()
+    {
+        // 말풍선 형태 데이터일때만 화면 갱신
+        int characterIndex = DataManager.Instance.characterList.IndexOf(chatData.character);
+        if (characterIndex > 6 || characterIndex == 3)
+        {
+            // 에피소드 1에서만 카톡 알림음 
+            //if (episodeIndex == 0 || chatroomIndex != 0) GameManager.Instance.PlayAnotherAudio(GameManager.AUDIO.NOTIFICATION);
+            SetChatroomBlock(0, chatData);
+            return true;
+        }
+        else return false;
+    }
 
     // 하나의 채팅방 블럭 세팅
     private void SetChatroomBlock(int index, ChatData lastData)
@@ -162,14 +159,14 @@ public class ChatListUI : MonoBehaviour
         timeTxt[index].text = lastData.time;
         dateTxt[index].text = lastData.date;
         readIcon[index].SetActive(!isEntered[index]);
-        Debug.Log("안읽음 아이콘 상태 : " + isEntered[index]);
+        //Debug.Log("안읽음 아이콘 상태 : " + isEntered[index]);
     }
 
     private void EnterChatroom(int index)
     {
         Debug.Log("인덱스 : " + index);
         ChatListManager.Instance.SetIsEntered(index, true);
-        Debug.Log("안읽음 아이콘 제거");
+        //Debug.Log("안읽음 아이콘 제거");
         GameManager.Instance.ChangeChatroom(index);
         GameManager.Instance.ChangeScene(GameManager.SCENE.INGAME);
     }
