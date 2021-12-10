@@ -40,28 +40,42 @@ public class ChatUI : MonoBehaviour
         chatroomIndex = DataManager.Instance.chatroomList.IndexOf(GameManager.Instance.chatroom);
         data = DataManager.Instance.GetChatList(episodeIndex, GameManager.Instance.chatroom);
 
-        // 공지
         if (episodeIndex >= 0)
         {
-            string chatroomName = ((chatroomIndex == 0) ? "4Master팀" : GameManager.Instance.chatroom); 
+            // 방제 및 공지 설정
+            string chatroomName = GameManager.Instance.chatroom;
+            if (chatroomIndex == 0) chatroomName = "4Master팀";
+            else if (GameManager.Instance.chatroom == "튜토리얼") chatroomName = "4MasterTalk";
             chatManager.SetChatScreen(chatroomName, DataManager.Instance.noticeList[chatroomIndex][episodeIndex]);
-        }
 
-        // 현재 채팅방이 에피소드 관련 갠톡이면 에피소드 후 갠톡 진행
-        if (GameManager.Instance.IsEpisodeFinished() && GameManager.Instance.chatroom.Equals(DataManager.Instance.GetPersonalChatName(episodeIndex)))
-        {
-            StartCoroutine(PersonalTalkCrt());
-        }
-        else if (chatroomIndex != 0)
-        {
-            // 팀단톡 이외의 톡방 세팅
-            for (int i = 0; i < data.Count; i++)
+
+            // 현재 채팅방이 에피소드 관련 갠톡이면 에피소드 후 갠톡 진행
+            if (GameManager.Instance.IsEpisodeFinished() && GameManager.Instance.chatroom.Equals(DataManager.Instance.GetPersonalChatName(episodeIndex)))
             {
-                chatData = data[i];
-                SetUI();
+                StartCoroutine(PersonalTalkCrt());
             }
+            else if (chatroomIndex != 0)
+            {
+                // 팀단톡 이외의 톡방 세팅
+                for (int i = 0; i < data.Count; i++)
+                {
+                    chatData = data[i];
+                    SetUI();
+                }
 
+            }
         }
+        else
+        {
+            // 방제 및 공지 설정
+            string chatroomName = "4MasterTalk";
+            chatManager.SetChatScreen(chatroomName, DataManager.Instance.noticeList[chatroomIndex][0]);
+
+            // 튜토리얼 스테이지에서는 하나씩 출력
+            StartCoroutine(TutorialTalkCrt());
+        }
+
+
 
         if (chatroomIndex != 0)
         {
@@ -155,8 +169,13 @@ public class ChatUI : MonoBehaviour
             else if (chatData.text.Contains("+")) fileName = chatData.text.Substring(1);
             else text = chatData.text;
 
-            string numStr = (GameManager.Instance.groupTalkUnChecked == 0) ?
-                "" : GameManager.Instance.groupTalkUnChecked.ToString();
+            // 단톡방이고 안읽은숫자가 0이 아니면 읽은숫자 표시
+            string numStr = "";
+            if (GameManager.Instance.chatroom == DataManager.Instance.chatroomList[0] &&
+                GameManager.Instance.groupTalkUnChecked != 0)
+            {
+                numStr = GameManager.Instance.groupTalkUnChecked.ToString();
+            }
             chatManager.Chat(isSend, text, chatData.time, chatData.character, numStr, image, fileName);
         }
 
@@ -260,7 +279,17 @@ public class ChatUI : MonoBehaviour
 
 
 
-
+    private IEnumerator TutorialTalkCrt()
+    {
+        List<ChatData> tutorialChat = DataManager.Instance.GetChatList(episodeIndex, DataManager.DATATYPE.TUTORIAL);
+        for (int i = 0; i < tutorialChat.Count; i++)
+        {
+            chatData = tutorialChat[i];
+            SetUI();
+            yield return new WaitForSeconds(2f);
+        }
+        yield return null;
+    }
 
     private IEnumerator PersonalTalkCrt()
     {

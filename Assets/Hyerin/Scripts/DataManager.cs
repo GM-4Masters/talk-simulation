@@ -69,6 +69,12 @@ public class DataManager : MonoBehaviour
         return personalChat[episodeNum][0].character;
     }
 
+    // 마지막 선택지인지 확인(배드엔딩 범위 수는 선택지수와 같음)
+    public bool IsLastChoice(int episodeNum, int index)
+    {
+        return index==(badChoiceList[episodeNum].Count);
+    }
+
     public bool IsLastBadEndingChat(int index)
     {
         int episodeIndex = GameManager.Instance.GetEpisodeIndex();
@@ -92,7 +98,7 @@ public class DataManager : MonoBehaviour
         for (int i=chatDataList[episodeNum].Count-1; i>=0 ; i--)
         {
             int charIndex = characterList.IndexOf(chatDataList[episodeNum][i].character);
-            if(chatDataList[episodeNum][i].index<last &&
+            if(chatDataList[episodeNum][i].index<=last &&
                 chatDataList[episodeNum][i].chatroom==chatroomList[0] &&
                 (charIndex>6 || charIndex == 3))
             {
@@ -241,11 +247,16 @@ public class DataManager : MonoBehaviour
         return chatDataList[episodeIndex][chatIndex];
         //return chatDataList[chatIndex];
     }
+    public ChatData GetFirstTutorial()
+    {
+        return tutorial[0];
+    }
 
     public ChatData GetLastTutorial()
     {
         return tutorial[tutorial.Count - 1];
     }
+
 }
 
 public class ChatData

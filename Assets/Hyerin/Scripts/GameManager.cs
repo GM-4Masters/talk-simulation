@@ -169,12 +169,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("Ending", (int)ending);
         PlayerPrefs.SetInt("GroupTalkUnChecked", groupTalkUnChecked);
 
-        // 각 채팅방의 읽음 상태 저장하기
-        for(int i=0; i<DataManager.Instance.chatroomList.Count; i++)
-        {
-            int boolValue = ChatListManager.Instance.GetIsEntered(i) ? 1 : 0;
-            PlayerPrefs.SetInt("IsEntered_" + i, boolValue);
-        }
+        ChatListManager.Instance.Save();
     }
 
     public void Load()

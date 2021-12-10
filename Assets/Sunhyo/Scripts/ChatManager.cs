@@ -31,15 +31,17 @@ public class ChatManager : MonoBehaviour
         if(!isSend) Bubble.ProfileImage.sprite = Resources.Load<Sprite>("Sprites/Profile/" + name);
 
         // ReadCount 텍스트 컴포넌트 저장
-        if (!isSend) GameManager.Instance.AddReadCountTxt(Bubble.gameObject.transform.GetChild(2).GetChild(2).GetComponent<Text>());
+        int childNum = (isSend) ? 0 : 2;
+        GameManager.Instance.AddReadCountTxt(Bubble.gameObject.transform.GetChild(childNum).GetChild(2).GetComponent<Text>());
 
-        if(!isSend)
+        if (!isSend)
         {
             Bubble.NameText.text = name;
-            Bubble.ReadCountText.text = readCount;
         }
 
-        if(img != "")
+        Bubble.ReadCountText.text = readCount;
+
+        if (img != "")
         {
             Bubble.TextRect.gameObject.SetActive(false);
             Bubble.ChatImage.sprite = Resources.Load<Sprite>("Sprites/Image/" + img);
@@ -61,8 +63,9 @@ public class ChatManager : MonoBehaviour
 
     public void SetDate(string date)
     {
-        Instantiate(DatePrefab).transform.SetParent(contentRect.transform, false);
-        DatePrefab.transform.GetChild(0).GetComponent<Text>().text = date;
+        GameObject obj = Instantiate(DatePrefab);
+        obj.transform.SetParent(contentRect.transform, false);
+        obj.transform.GetChild(0).GetComponent<Text>().text = date;
     }
 
     void Fit(RectTransform Rect) => LayoutRebuilder.ForceRebuildLayoutImmediate(Rect);

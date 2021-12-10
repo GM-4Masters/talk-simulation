@@ -116,29 +116,32 @@ public class ChatListUI : MonoBehaviour
             timeTxt[0].text = "";
             dateTxt[0].text = "";
             previewTxt[0].text = "";
-            Debug.Log(GameManager.Instance.lastChatIndex);
             StartCoroutine(LateUpdateCrt(episodeIndex));
 
+            SetChatroomBlock(5, DataManager.Instance.GetLastTutorial());
         }
-
-        // 튜토리얼은 항상 보임
-        SetChatroomBlock(5, DataManager.Instance.GetLastTutorial());
+        else
+        {
+            SetChatroomBlock(5, DataManager.Instance.GetFirstTutorial());
+        }
     }
 
     // 늦은 업데이트
     private IEnumerator LateUpdateCrt(int episodeIndex)
     {
-        yield return new WaitForSeconds(0.001f);
-        chatData = GameManager.Instance.GetChatData();
-        if (chatData.character == "게임시작") chatData = DataManager.Instance.GetChatData(episodeIndex, GameManager.Instance.currentChatIndex-1);
+        yield return new WaitForSeconds(0.05f);
+        // 게임시작 전 시점에는 가장 최근 메시지, 에피소드 끝난 후에는 가장 최근 사람 메시지,
+        // 나머지 경우(에피소드 진행 중 강종 후 재시작)에는 세이브포인트 시점 메시지를 출력
+        if (GameManager.Instance.choiceNum == -1) chatData = DataManager.Instance.GetChatData(episodeIndex,GameManager.Instance.currentChatIndex-1);
+        else if (GameManager.Instance.IsEpisodeFinished()) chatData = DataManager.Instance.GetLastChat(GameManager.Instance.ending == GameManager.ENDING.NORMAL, episodeIndex);
+        else chatData = DataManager.Instance.GetChatData(episodeIndex, GameManager.Instance.lastChatIndex + 1);
         SetChatroomBlock(0, chatData);
+
 
         // 에피소드 끝났다면 갠톡 세팅
         chatListBlock[0].GetComponent<Button>().interactable = !GameManager.Instance.IsEpisodeFinished();
         if (GameManager.Instance.IsEpisodeFinished())
         {
-            SetChatroomBlock(0, DataManager.Instance.GetLastChat(GameManager.Instance.ending == GameManager.ENDING.NORMAL, episodeIndex));
-
             List<ChatData> personalChat = DataManager.Instance.GetChatList(episodeIndex, DataManager.DATATYPE.PERSONAL);
             //Debug.Log("personalchat[0]:" + personalChat[0].chatroom);
             int index = DataManager.Instance.chatroomList.IndexOf(personalChat[0].chatroom);
@@ -192,6 +195,7 @@ public class ChatListUI : MonoBehaviour
     {
         //Debug.Log("인덱스 : " + index);
         ChatListManager.Instance.SetIsEntered(index, true);
+        ChatListManager.Instance.Save();
         //Debug.Log("안읽음 아이콘 제거");
         GameManager.Instance.ChangeChatroom(index);
         GameManager.Instance.ChangeScene(GameManager.SCENE.INGAME);

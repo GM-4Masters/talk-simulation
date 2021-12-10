@@ -31,6 +31,7 @@ public class ChatListManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        isEntered[0] = true;
     }
 
     public void ResetState()
@@ -39,6 +40,19 @@ public class ChatListManager : MonoBehaviour
         {
             isEntered[i] = false;
         }
+        // 단톡방은 항상 읽음 상태임
+        isEntered[0] = true;
+    }
+
+    public void Save()
+    {
+        // 각 채팅방의 읽음 상태 세이브
+        for (int i = 0; i < DataManager.Instance.chatroomList.Count; i++)
+        {
+            int boolValue = ChatListManager.Instance.GetIsEntered(i) ? 1 : 0;
+            PlayerPrefs.SetInt("IsEntered_" + i, boolValue);
+        }
+        Debug.Log("saved enter state");
     }
 
     public void SetIsEntered(int idx, bool _isEntered)
