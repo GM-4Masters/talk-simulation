@@ -8,11 +8,14 @@ public class ChatListUI : MonoBehaviour
     [SerializeField] private GameObject scrollView;
     [SerializeField] private Image groupTalkEmoji; // 단톡방 이모지
     [SerializeField] private Image alertIcon;    // 채팅목록 상단 알림 아이콘
+    [SerializeField] private GameObject popupMessage;   // 팝업메시지(입장 불가 등)
 
     private GameObject[] chatListBlock;
     private Button[] chatListBtn;
     private Text[] nameTxt, previewTxt, timeTxt, dateTxt;
 
+    private Image popupMessageImg;
+    private Text popupMessageTxt;
 
 
 
@@ -26,7 +29,7 @@ public class ChatListUI : MonoBehaviour
 
 
 
-
+    private IEnumerator popupEffectCrt;
 
     ChatData chatData;
 
@@ -41,7 +44,8 @@ public class ChatListUI : MonoBehaviour
         timeTxt = new Text[size];
         dateTxt = new Text[size];
 
-
+        popupMessageImg = popupMessage.GetComponent<Image>();
+        popupMessageTxt = popupMessage.transform.GetChild(0).GetComponent<Text>();
 
 
 
@@ -139,7 +143,6 @@ public class ChatListUI : MonoBehaviour
 
 
         // 에피소드 끝났다면 갠톡 세팅
-        chatListBlock[0].GetComponent<Button>().interactable = !GameManager.Instance.IsEpisodeFinished();
         if (GameManager.Instance.IsEpisodeFinished())
         {
             List<ChatData> personalChat = DataManager.Instance.GetChatList(episodeIndex, DataManager.DATATYPE.PERSONAL);
@@ -193,11 +196,40 @@ public class ChatListUI : MonoBehaviour
 
     private void EnterChatroom(int index)
     {
+        // 에피소드 종료 후 입장 시
+        if (GameManager.Instance.IsEpisodeFinished() && index==0)
+        {
+            if (popupEffectCrt != null) StopCoroutine(popupEffectCrt);
+            popupEffectCrt = PopupEffectCrt();
+            StartCoroutine(popupEffectCrt);
+            return;
+        }
+        chatListBlock[0].GetComponent<Button>().interactable = !GameManager.Instance.IsEpisodeFinished();
         //Debug.Log("인덱스 : " + index);
         ChatListManager.Instance.SetIsEntered(index, true);
         ChatListManager.Instance.Save();
         //Debug.Log("안읽음 아이콘 제거");
         GameManager.Instance.ChangeChatroom(index);
         GameManager.Instance.ChangeScene(GameManager.SCENE.INGAME);
+    }
+
+    private IEnumerator PopupEffectCrt()
+    {
+        popupMessage.SetActive(true);
+
+        float time = 0f;
+        Color bgColor = popupMessageImg.color;  // 0f ~ 0.5f
+        Color txtColor = popupMessageTxt.color; // 0f ~ 1f
+        while (time<2f)
+        {
+            time += Time.deltaTime;
+            bgColor.a = Mathf.Clamp((Mathf.Sin(time * 2) * 2), 0, 1) * 0.5f;
+            txtColor.a = Mathf.Clamp((Mathf.Sin(time * 2) * 2), 0, 1);
+            popupMessageImg.color = bgColor;
+            popupMessageTxt.color = txtColor;
+            yield return null;
+        }
+
+        popupMessage.SetActive(false);
     }
 }

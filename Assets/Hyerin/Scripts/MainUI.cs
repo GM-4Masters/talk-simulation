@@ -24,6 +24,7 @@ public class MainUI : MonoBehaviour
     public void Login()
     {
         GameManager.Instance.ChangeScene(GameManager.SCENE.CHATLIST);
+        GameManager.Instance.GetAudioController().PlayEffect(AudioController.EFFECT.START);
     }
 
     public void Quit()

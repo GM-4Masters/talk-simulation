@@ -69,10 +69,37 @@ public class DataManager : MonoBehaviour
         return personalChat[episodeNum][0].character;
     }
 
-    // 마지막 선택지인지 확인(배드엔딩 범위 수는 선택지수와 같음)
-    public bool IsLastChoice(int episodeNum, int index)
+    // 마지막 분기인지 확인
+    public bool IsLastDialogueSet(int episodeNum, int index)
     {
-        return index==(badChoiceList[episodeNum].Count);
+        return index==(goodChoiceList[episodeNum].Count);
+    }
+
+    // 해당 채팅.index 값이 범위에 속하는지 판단(반대 범위에 속하지 않아야 참을 반환)
+    public bool IsInRange(int chatIndex, bool isGoodChoice, int episodeNum)
+    {
+        bool result=true;
+        //Debug.Log("idx:" + chatIndex + ", Good:" + isGoodChoice + ", cho:" + choiceNum+", min:"+
+        //    goodChoiceList[episodeNum][choiceNum][0]+", max:"+ goodChoiceList[episodeNum][choiceNum][1]);
+        if (isGoodChoice)
+        {
+            for(int i=0; i<badChoiceList[episodeNum].Count; i++)
+            {
+                if (chatIndex>=badChoiceList[episodeNum][i][0] && chatIndex<=badChoiceList[episodeNum][i][1]) result = false;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < goodChoiceList[episodeNum].Count; i++)
+            {
+                if (chatIndex >= goodChoiceList[episodeNum][i][0] && chatIndex <= goodChoiceList[episodeNum][i][1]) result = false;
+            }
+        }
+
+        return result;
+
+        //if (isGoodChoice) return (chatIndex >= goodChoiceList[episodeNum][choiceNum][0] && chatIndex <= goodChoiceList[episodeNum][choiceNum][1]);
+        //else return (chatIndex >= badChoiceList[episodeNum][choiceNum][0] && chatIndex <= badChoiceList[episodeNum][choiceNum][1]);
     }
 
     public bool IsLastBadEndingChat(int index)
@@ -83,7 +110,7 @@ public class DataManager : MonoBehaviour
 
     public bool IsSavePoint(int index, int episodeNum)
     {
-        if (GameManager.Instance.choiceNum < 0) return false;
+        if (GameManager.Instance.choiceNum < 0 || GameManager.Instance.choiceNum==goodChoiceList[episodeNum].Count-1) return false;
         return (goodChoiceList[episodeNum][GameManager.Instance.choiceNum][0] == index);
     }
 
@@ -106,6 +133,11 @@ public class DataManager : MonoBehaviour
             }
         }
         return null;
+    }
+
+    public int GetBadEndingOffset(int episodeIndex, int choiceNum)
+    {
+        return badChoiceList[episodeIndex][choiceNum][0] - goodChoiceList[episodeIndex][choiceNum][0];
     }
 
     private void LoadNoticeData(string fileName)

@@ -11,38 +11,40 @@ public class GameManager : MonoBehaviour
     [Range(1, 10)]
     public int speed;   // 채팅 진행 속도
 
+    [SerializeField] private Button goMainBtn;
+
     private static GameManager instance;
-    private AudioClip[] audioClip = new AudioClip[3];
-    private AudioSource audioSource;
 
     private List<Text> readCountTxt = new List<Text>();
 
+    private AudioController audioController;
     private ChatListUI chatListUI;
     private ChatUI chatUI;
 
-    private ChatData currentChatData;                       // 출력할 채팅 데이터(세이브포인트: 선택지 이후)
 
-    private bool isTutorialFinished = false;               // 튜토리얼 완료 여부
+    // 세이브 시점: 선택지 선택 후, 에피소드 전환, 
+    #region SAVE_DATA ------------------------------------------------------------------------------------------
+    private bool isTutorialFinished = false;                // 튜토리얼 완료 여부
     private bool isEpisodeFinished = false;                 // 현재 에피소드 완료 여부(완료 후 채팅 띄우기 위해; 에피소드 전환 시 리셋)
-    private bool isWait = false;                            // 대기
-
-    public int choiceNum = -1;                            // 현재 에피소드에서 선택지 거친 횟수
-    public int currentChatIndex = 0;                        // 현재 출력할 채팅 번호
-    public int lastChatIndex = -1;                          // 가장 최근 출력한 채팅 번호
-    public int groupTalkUnChecked = 3;                      // (단톡방 한정)안읽은 사람 수
+    public bool isChoiceRight;                              // 현재 선택지에 대한 선택이 정답인지
     private int episodeIndex = -1;                          // 현재 에피소드 번호
+    public int choiceNum = -1;                              // 현재 에피소드에서 마지막으로 완료한 선택지 번호
+    public int currentChatIndex = 0;                        // 현재 출력할 채팅 번호
+    public int groupTalkUnChecked = 3;                      // (단톡방 한정)안읽은 사람 수
+    public ENDING ending = ENDING.NORMAL;                   // 엔딩
+    #endregion --------------------------------------------------------------------------------------------------
+
+    private ChatData currentChatData;                       // 출력할 채팅 데이터(세이브포인트: 선택지 이후)
+    private bool isWait = false;                            // 대기상태
+    public int lastChatIndex = -1;                          // 가장 최근 출력한 채팅 번호
     private float spendTime;                                // 흐른 시간(채팅 출력 후 리셋)
     public string chatroom = null;                          // 현재 입장한 채팅방 이름(팀단톡,김산호,벅찬우,이채린,엄마,4MasterTalk,GameMasters)
     private SCENE currentScene;                             // 현재 씬 타입
-    public ENDING ending = ENDING.NORMAL;                   // 엔딩
 
-    public List<List<int[]>> goodChoiceList = new List<List<int[]>>();
-    public List<List<int[]>> badChoiceList = new List<List<int[]>>();
 
     public List<int> mainEpisodeCnt;
 
     public enum ENDING { NORMAL, BAD1, BAD2, BAD3, }
-    public enum AUDIO { MAIN, INGAME, BAD, NORMAL, NOTIFICATION }
     public enum SCENE { MAIN, CHATLIST, INGAME, ENDING, }
 
     public static GameManager Instance
@@ -72,15 +74,12 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        audioSource = GetComponent<AudioSource>();
+        audioController = GetComponent<AudioController>();
     }
 
     private void OnEnable()
     {
         SceneManager.sceneLoaded += LoadedSceneEvent;
-
-        goodChoiceList = DataManager.Instance.goodChoiceList;
-        badChoiceList = DataManager.Instance.badChoiceList;
     }
 
     private void OnDisable()
@@ -92,12 +91,11 @@ public class GameManager : MonoBehaviour
     {
         spendTime += (Time.deltaTime*speed);
 
-        //(배드엔딩 마지막 또는 에피소드2의 마지막) 채팅 출력이 끝났다면 채팅출력 중단하고 페이드아웃
+        //(배드엔딩 마지막 또는 에피소드2의 마지막) 채팅 출력이 끝났다면 채팅출력 중단
         if((!isEpisodeFinished && ending!=ENDING.NORMAL && DataManager.Instance.IsLastBadEndingChat(currentChatData.index)) ||
            (!isEpisodeFinished && episodeIndex==2 && currentChatIndex>=mainEpisodeCnt[episodeIndex]-1) )
         {
             isEpisodeFinished = true;
-            StartCoroutine(FadeoutCrt());
         }
         else if (episodeIndex >= 0 && !isWait && spendTime >= currentChatData.dt)
         {
@@ -110,12 +108,16 @@ public class GameManager : MonoBehaviour
                 GoNext();
             }
         }
-    }
 
-    private IEnumerator FadeoutCrt()
-    {
-        yield return new WaitForSeconds(2f);
-        ChangeScene(SCENE.ENDING);
+        // 터치음
+        //if (Input.touchCount > 0)
+        //{
+        //    Touch touch = Input.GetTouch(0);
+        //    if (touch.phase == TouchPhase.Began)
+        //    {
+        //        GameManager.Instance.GetAudioController().PlayEffect(AudioController.EFFECT.TOUCH);
+        //    }
+        //}
     }
 
     public void GoNext()
@@ -128,9 +130,9 @@ public class GameManager : MonoBehaviour
                 if (!isEpisodeFinished)
                 {
                     isEpisodeFinished = true;
+                    Debug.Log("GoNext called: episode finished");
                 }
             }
-            else if(currentScene != SCENE.ENDING) ChangeScene(SCENE.ENDING);
         }
         else if(currentChatIndex < mainEpisodeCnt[episodeIndex]-1)
         {
@@ -158,16 +160,26 @@ public class GameManager : MonoBehaviour
         choiceNum = -1;
         groupTalkUnChecked = 3;
         isEpisodeFinished = false;
+        ChatListManager.Instance.ResetState();
+        audioController.SetNextIngameBGM(episodeIndex);
+        ClearReadCount();
         Save();
     }
 
     public void Save()
     {
+        int tutorialState = (isTutorialFinished)? 1 : 0;
+        int episodeState = (isEpisodeFinished) ? 1 : 0;
+        int choiceRight = (isChoiceRight) ? 1 : 0;
+        PlayerPrefs.SetInt("IsTutorialFinished", tutorialState);
+        PlayerPrefs.SetInt("IsEpisodeFinished", episodeState);
+        PlayerPrefs.SetInt("IsChoiceRight", choiceRight);
+
         PlayerPrefs.SetInt("Episode", episodeIndex);
+        PlayerPrefs.SetInt("ChoiceNum", choiceNum);
         PlayerPrefs.SetInt("ChatIndex", currentChatIndex);
-        PlayerPrefs.SetInt("SelectedNum", choiceNum);
-        PlayerPrefs.SetInt("Ending", (int)ending);
         PlayerPrefs.SetInt("GroupTalkUnChecked", groupTalkUnChecked);
+        PlayerPrefs.SetInt("Ending", (int)ending);
 
         ChatListManager.Instance.Save();
     }
@@ -176,24 +188,34 @@ public class GameManager : MonoBehaviour
     {
         if (PlayerPrefs.HasKey("Episode"))
         {
+            isTutorialFinished = (PlayerPrefs.GetInt("IsTutorialFinished") == 1);
+            isEpisodeFinished = (PlayerPrefs.GetInt("isEpisodeFinished") == 1);
+            isChoiceRight = (PlayerPrefs.GetInt("IsChoiceRight") == 1);
+
             episodeIndex = PlayerPrefs.GetInt("Episode");
+            choiceNum = PlayerPrefs.GetInt("ChoiceNum");
             currentChatIndex = PlayerPrefs.GetInt("ChatIndex");
-            choiceNum = PlayerPrefs.GetInt("SelectedNum");
-            ending = (ENDING)PlayerPrefs.GetInt("Ending");
-            //Debug.Log("load_ending:" + ending);
             groupTalkUnChecked = PlayerPrefs.GetInt("GroupTalkUnChecked");
-            if (ending != ENDING.NORMAL) currentChatIndex += (badChoiceList[episodeIndex][choiceNum][0]-goodChoiceList[episodeIndex][choiceNum][0]);
-            lastChatIndex = currentChatIndex-1;
-            currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
-            //Debug.Log("episodeIndex:" + episodeIndex+ ", currentChatIndex:"+ currentChatIndex);
-            Debug.Log("Loaded:" + currentChatIndex + ", ending:" + ending);
+            ending = (ENDING)PlayerPrefs.GetInt("Ending");
 
             // 각 채팅방의 읽음 상태 불러오기
             for (int i = 0; i < DataManager.Instance.chatroomList.Count; i++)
             {
-                bool value = (PlayerPrefs.GetInt("IsEntered_" + i)==1);
+                bool value = (PlayerPrefs.GetInt("IsEntered_" + i) == 1);
                 ChatListManager.Instance.SetIsEntered(i, value);
             }
+
+            audioController.LoadIngameBGM();
+
+            // 로드 완료--------------------------------------------------------------
+
+            // 엔딩에 따라 채팅시작지점 변경
+            if (ending != ENDING.NORMAL) currentChatIndex += DataManager.Instance.GetBadEndingOffset(episodeIndex,choiceNum);
+            lastChatIndex = currentChatIndex-1;
+
+            currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
+            //Debug.Log("episodeIndex:" + episodeIndex+ ", currentChatIndex:"+ currentChatIndex);
+            Debug.Log("Loaded:" + currentChatIndex + ", ending:" + ending);
         }
     }
 
@@ -201,17 +223,27 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("게임데이터 리셋");
 
+        // PlayerPrefs 데이터 삭제(음량 설정은 유지)
+        float bgmVolume = audioController.GetBgmVolume();
+        float effectVolume = audioController.GetEffectVolume();
         PlayerPrefs.DeleteAll();
+        audioController.SetBgmVolume(bgmVolume);
+        audioController.SetEffectVolume(effectVolume);
+
         isTutorialFinished = false;
         isEpisodeFinished = false;
-        isWait = false;
+
         episodeIndex = -1;
-        spendTime = 0f;
-        currentChatIndex = 0;
-        lastChatIndex = -1;
         choiceNum = -1;
+        currentChatIndex = 0;
+        groupTalkUnChecked = 3;
         ending = ENDING.NORMAL;
+
         ChatListManager.Instance.ResetState();
+
+        isWait = false;
+        lastChatIndex = -1;
+        spendTime = 0f;
     }
 
     public float GetPlaySpeed()
@@ -239,30 +271,9 @@ public class GameManager : MonoBehaviour
         return readCountTxt;
     }
 
-    // 현재 진행 흐름에 맞는 대화인지
-    public bool IsRight(int index)
+    public AudioController GetAudioController()
     {
-        bool value = true;
-        if (choiceNum < 0) return value;
-
-        // 배드엔딩 아닌경우 배드엔딩 채팅 범위에 속하지 않아야 함
-        if (ending == ENDING.NORMAL)
-        {
-            for(int i=0; i<badChoiceList[episodeIndex].Count; i++)
-            {
-                if (index >= badChoiceList[episodeIndex][i][0] && index <= badChoiceList[episodeIndex][i][1]) value = false;
-            }
-            //return (index < badChoiceList[episodeIndex][choiceNum][0] || index > badChoiceList[episodeIndex][choiceNum][1]);
-        }
-        else
-        {
-            for (int i = 0; i < goodChoiceList[episodeIndex].Count; i++)
-            {
-                if (index >= goodChoiceList[episodeIndex][i][0] && index <= goodChoiceList[episodeIndex][i][1]) value = false;
-            }
-            //return (index < goodChoiceList[episodeIndex][choiceNum][0] || index > goodChoiceList[episodeIndex][choiceNum][1]);
-        }
-        return value;
+        return audioController;
     }
 
     public bool IsEpisodeFinished()
@@ -299,8 +310,10 @@ public class GameManager : MonoBehaviour
     // 오답 선택지 선택 시 현재 에피소드 번호를 엔딩번호로 지정
     public void ChangeEnding()
     {
+        if (ending == (ENDING)(episodeIndex + 1)) return;
         Debug.Log("엔딩 결정됨");
         ending = (ENDING)(episodeIndex+1);
+        audioController.ChangeMood(episodeIndex);
     }
 
     public void ChangeWaitFlag(bool value)
@@ -310,7 +323,7 @@ public class GameManager : MonoBehaviour
 
     public void ChangeScene(SCENE scene)
     {
-        audioSource.Stop();
+        audioController.StopBGM();
         SceneManager.LoadScene((int)scene);
     }
 
@@ -325,11 +338,14 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log(scene.name + " 씬 로드됨");
 
+        // 메뉴창 '메인으로' 버튼 활성화 상태 변경
+        goMainBtn.interactable = (scene.buildIndex!=(int)SCENE.MAIN);
+
         if (scene.buildIndex == (int)SCENE.MAIN)
         {
             currentScene = SCENE.MAIN;
             Load();
-            PlayAudio(AUDIO.MAIN);
+            audioController.PlayBGM(AudioController.BGM.MAIN);
         }
 
         if (scene.buildIndex == (int)SCENE.CHATLIST)
@@ -343,26 +359,30 @@ public class GameManager : MonoBehaviour
         {
             currentScene = SCENE.INGAME;
             if (chatUI == null) chatUI = GameObject.Find("Canvas").GetComponent<ChatUI>();
+            if(chatroom==DataManager.Instance.chatroomList[0]) audioController.PlayIngameBGM();
         }
 
         // 엔딩
         if (scene.buildIndex == (int)SCENE.ENDING)
         {
             currentScene = SCENE.ENDING;
-            if (ending == ENDING.NORMAL) PlayAudio(AUDIO.NORMAL);
-            else PlayAudio(AUDIO.BAD);
+            switch (ending)
+            {
+                case ENDING.NORMAL:
+                    audioController.PlayBGM(AudioController.BGM.ED0);
+                    break;
+                case ENDING.BAD1:
+                    audioController.PlayBGM(AudioController.BGM.ED1);
+                    break;
+                case ENDING.BAD2:
+                    audioController.PlayBGM(AudioController.BGM.ED2);
+                    break;
+                case ENDING.BAD3:
+                    audioController.PlayBGM(AudioController.BGM.ED3);
+                    break;
+                default:
+                    break;
+            }
         }
-    }
-
-    private void PlayAudio(AUDIO audio)
-    {
-        //if (audioSource.isPlaying) audioSource.Stop();
-        //audioSource.clip = audioClip[(int)audio];
-        //audioSource.Play();
-    }
-
-    public void PlayAnotherAudio(AUDIO audio)
-    {
-
     }
 }

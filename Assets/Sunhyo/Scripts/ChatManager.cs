@@ -166,6 +166,7 @@ public class ChatManager : MonoBehaviour
 
     IEnumerator PrintLikeKeyboard(string _text, float waitTime)
     {
+        GameManager.Instance.GetAudioController().PlayEffect(AudioController.EFFECT.TYPING);
         for (int i = 0; i < _text.Length + 1; i++)
         {
             yield return new WaitForSeconds(0.05f/GameManager.Instance.GetPlaySpeed());
@@ -173,6 +174,7 @@ public class ChatManager : MonoBehaviour
             ChatText.text = _text.Substring(0, i);
         }
 
+        GameManager.Instance.GetAudioController().StopEffect();
         yield return new WaitForSeconds(waitTime);
 
         StartCoroutine(DeleteString(_text));
