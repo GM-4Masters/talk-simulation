@@ -2346,8 +2346,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 316953118}
-        m_TargetAssemblyTypeName: MenuUI, Assembly-CSharp
+      - m_Target: {fileID: 2011153738}
+        m_TargetAssemblyTypeName: MainUI, Assembly-CSharp
         m_MethodName: Quit
         m_Mode: 1
         m_Arguments:
@@ -3543,6 +3543,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   goMainBtn: {fileID: 263773090}
+  isChoiceRight: 0
   choiceNum: -1
   currentChatIndex: 0
   groupTalkUnChecked: 3

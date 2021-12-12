@@ -8,7 +8,7 @@ public class AudioController : MonoBehaviour
     [SerializeField] private AudioClip[] effectClip = new AudioClip[5];
     [SerializeField] private AudioSource bgmAudio;
     [SerializeField] private AudioSource effectAudio;
-    public enum BGM { MAIN, EP1, GBS1, EP2, GBS2, EP3_1, GBS3, EP3_2, ED0, ED1, ED2, ED3 }
+    public enum BGM { MAIN, EP1, GBS1, EP2, GBS2, EP3_1, GBS3, EP3, ED0, ED1, ED2, ED3 }
     public enum EFFECT { ALERT, START, TOUCH, TYPING, POP, }
 
     private BGM ingameBgm = BGM.MAIN;                   // 인게임 배경음(세이브)
@@ -105,7 +105,7 @@ public class AudioController : MonoBehaviour
     // 갑자기 분위기 싸해짐
     public void ChangeMood(int episodeIndex)
     {
-        ingameBgm = (BGM)(episodeIndex + 1 + (int)BGM.ED0);
+        ingameBgm = (BGM)System.Enum.Parse(typeof(BGM), "GBS" + (episodeIndex + 1));
         PlayBGM(ingameBgm);
         SaveIngameBGM();
     }

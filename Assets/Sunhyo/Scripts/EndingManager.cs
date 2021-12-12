@@ -46,7 +46,7 @@ public class EndingManager : MonoBehaviour
     private void OnEnable()
     {
         int endingIndex = (int)GameManager.Instance.GetEndingType();
-        Debug.Log("ending:" + DataManager.Instance.endingList[endingIndex]);
+        //Debug.Log("ending:" + DataManager.Instance.endingList[endingIndex]);
         SetEnding(endingTitle[endingIndex], "Ending" + endingIndex, DataManager.Instance.endingList[endingIndex]);
     }
 

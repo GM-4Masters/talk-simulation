@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
 
     private ChatData currentChatData;                       // 출력할 채팅 데이터(세이브포인트: 선택지 이후)
     private bool isWait = false;                            // 대기상태
-    public int lastChatIndex = -1;                          // 가장 최근 출력한 채팅 번호
+    public int lastChatIndex = -1;                          // 가장 최근 갱신된 채팅 번호
     private float spendTime;                                // 흐른 시간(채팅 출력 후 리셋)
     public string chatroom = null;                          // 현재 입장한 채팅방 이름(팀단톡,김산호,벅찬우,이채린,엄마,4MasterTalk,GameMasters)
     private SCENE currentScene;                             // 현재 씬 타입
@@ -92,17 +92,18 @@ public class GameManager : MonoBehaviour
         spendTime += (Time.deltaTime*speed);
 
         //(배드엔딩 마지막 또는 에피소드2의 마지막) 채팅 출력이 끝났다면 채팅출력 중단
-        if((!isEpisodeFinished && ending!=ENDING.NORMAL && DataManager.Instance.IsLastBadEndingChat(currentChatData.index)) ||
-           (!isEpisodeFinished && episodeIndex==2 && currentChatIndex>=mainEpisodeCnt[episodeIndex]-1) )
+        if ( (!isEpisodeFinished) &&
+             ( (ending != ENDING.NORMAL && DataManager.Instance.IsLastBadEndingChat(currentChatData.index) ) ||
+               (episodeIndex == 2 && currentChatIndex >= mainEpisodeCnt[episodeIndex] - 1) ) )
         {
-            isEpisodeFinished = true;
+            if (!isEpisodeFinished) isEpisodeFinished = true;
         }
         else if (episodeIndex >= 0 && !isWait && spendTime >= currentChatData.dt)
         {
             // 에피소드 진행중이고
             // 현재 채팅방에 있거나 채팅방에 없어도 실행되는 데이터일 경우
             int characterIndex = DataManager.Instance.characterList.IndexOf(currentChatData.character);
-            if (currentChatIndex<mainEpisodeCnt[episodeIndex] &&
+            if (currentChatIndex < mainEpisodeCnt[episodeIndex] &&
                 (chatroom == currentChatData.chatroom || (characterIndex > 2 && characterIndex < 13)))
             {
                 GoNext();
@@ -123,18 +124,15 @@ public class GameManager : MonoBehaviour
     public void GoNext()
     {
         // 현재 에피소드 끝까지 진행되었을 경우 - 다음 에피소드로 이동 or 게임오버
-        if (currentChatIndex == DataManager.Instance.GetEpisodeSize(episodeIndex)-1)
+        if (currentChatIndex >= DataManager.Instance.GetEpisodeSize(episodeIndex)-1)
         {
-            if (ending == ENDING.NORMAL)
+            if (!isEpisodeFinished)
             {
-                if (!isEpisodeFinished)
-                {
-                    isEpisodeFinished = true;
-                    Debug.Log("GoNext called: episode finished");
-                }
+                isEpisodeFinished = true;
+                //Debug.Log("GoNext: episode finished");
             }
         }
-        else if(currentChatIndex < mainEpisodeCnt[episodeIndex]-1)
+        else
         {
             // 선택지 지점이면 세이브
             if (DataManager.Instance.IsSavePoint(currentChatData.index, episodeIndex)) Save();
@@ -143,6 +141,7 @@ public class GameManager : MonoBehaviour
             currentChatData = DataManager.Instance.GetChatData(episodeIndex, currentChatIndex);
             spendTime = 0f;
 
+            //Debug.Log("GoNext:"+currentChatIndex);
             string waitCharacter = "독백,선택지";
             if (waitCharacter.Contains(currentChatData.character)) isWait = true;
             //if (currentScene != SCENE.INGAME && currentChatData.character == "아트님") isWait = true;
@@ -254,6 +253,11 @@ public class GameManager : MonoBehaviour
     public int GetEpisodeIndex()
     {
         return episodeIndex;
+    }
+
+    public SCENE GetCurrentScene()
+    {
+        return currentScene;
     }
 
     public ChatData GetChatData()

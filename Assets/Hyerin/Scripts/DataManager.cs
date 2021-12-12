@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
 
 public class DataManager : MonoBehaviour
 {
@@ -72,7 +70,8 @@ public class DataManager : MonoBehaviour
     // 마지막 분기인지 확인
     public bool IsLastDialogueSet(int episodeNum, int index)
     {
-        return index==(goodChoiceList[episodeNum].Count);
+        if (episodeNum == 2) return (badChoiceList[episodeNum][badChoiceList[episodeNum].Count - 1][1] < index);
+        else return (badChoiceList[episodeNum][badChoiceList[episodeNum].Count - 2][1] < index);
     }
 
     // 해당 채팅.index 값이 범위에 속하는지 판단(반대 범위에 속하지 않아야 참을 반환)

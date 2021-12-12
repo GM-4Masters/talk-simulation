@@ -10,9 +10,11 @@ public class ChatUI : MonoBehaviour
     [SerializeField] private GameObject notification;
     [SerializeField] private GameObject notice;
     [SerializeField] private GameObject popupMessage;   // 팝업메시지(입장 불가 등)
+    [SerializeField] private Image fadeoutImg;
 
     ChatData chatData;
 
+    private bool isGameStart = false;
     private bool isFirstSelect = true;
     private int chatroomIndex;
     private int episodeIndex;
@@ -42,11 +44,11 @@ public class ChatUI : MonoBehaviour
 
     private void OnEnable()
     {
+        fadeoutImg.color = new Color(0, 0, 0, 0);
+
         episodeIndex = GameManager.Instance.GetEpisodeIndex();
         chatroomIndex = DataManager.Instance.chatroomList.IndexOf(GameManager.Instance.chatroom);
         data = DataManager.Instance.GetChatList(episodeIndex, GameManager.Instance.chatroom);
-
-        Debug.Log("episodeIndex"+ episodeIndex+ ",chatroomIndex:"+ chatroomIndex+ ",data:"+ data[0].text);
 
         if (episodeIndex >= 0)
         {
@@ -115,23 +117,29 @@ public class ChatUI : MonoBehaviour
                         if (GameManager.Instance.GetEndingType()==GameManager.ENDING.NORMAL)
                         {
                             ShowNotification();
-                        }                            
-                        if (recentIndex == GameManager.Instance.mainEpisodeCnt[episodeIndex] - 1)
+                        }
+                        if ( recentIndex == GameManager.Instance.mainEpisodeCnt[episodeIndex] - 1)
                         {
-                            StartCoroutine(WaitAndExit(GameManager.SCENE.CHATLIST));
+                            if (GameManager.Instance.GetEndingType() == GameManager.ENDING.NORMAL)
+                            {
+                                StartCoroutine(WaitAndExit(GameManager.SCENE.CHATLIST, 2f));
+                            }
+                            else
+                            {
+                                StartCoroutine(WaitAndExit(GameManager.SCENE.ENDING, 2f));
+                            }
                         }
                     }
                     else
                     {
-                        if (GameManager.Instance.IsEpisodeFinished())
+                        // 마지막 에피소드 후 엔딩
+                        if (recentIndex == GameManager.Instance.mainEpisodeCnt[episodeIndex] - 1)
                         {
-                            StartCoroutine(WaitAndExit(GameManager.SCENE.ENDING));
+                            float waitTime = float.Parse(chatData.text.Substring(chatData.text.Length - 3, 1));
+                            StartCoroutine(WaitAndExit(GameManager.SCENE.ENDING, waitTime));
                         }
-                        else
-                        {
-                            Play();
-                            SetUI();
-                        }
+                        Play();
+                        SetUI();
                     }
                     GameManager.Instance.lastChatIndex = recentIndex;
                 }
@@ -148,7 +156,7 @@ public class ChatUI : MonoBehaviour
 
         // 마지막 분기점이라면 엔딩값, 아니면 선택지 정답 여부로 범위를 지정하고
         // 현재 채팅이 해당 범위에 속하는지를 판단
-        if (DataManager.Instance.IsLastDialogueSet(episodeIndex, choiceNum))
+        if (DataManager.Instance.IsLastDialogueSet(episodeIndex, chatData.index))
         {
             bool isGoodEnding = (GameManager.Instance.ending == GameManager.ENDING.NORMAL);
             return (DataManager.Instance.IsInRange(chatData.index, isGoodEnding, episodeIndex));
@@ -175,6 +183,7 @@ public class ChatUI : MonoBehaviour
                 WaitForSelect();
                 break;
             case "게임시작":
+                isGameStart = true;
                 GameManager.Instance.ChangeWaitFlag(false);
                 break;
             default:
@@ -182,7 +191,7 @@ public class ChatUI : MonoBehaviour
                 break;
         }
 
-        if (talkable.Contains(chatData.character))
+        if (isGameStart && (talkable.Contains(chatData.character) || chatData.character == "아트님"))
         {
             GameManager.Instance.GetAudioController().PlayEffect(AudioController.EFFECT.POP);
         }
@@ -263,12 +272,12 @@ public class ChatUI : MonoBehaviour
         string wrong = chatData.text;
         if (answerNum == 0) chatManager.SetAnswer(answer, wrong);
         else chatManager.SetAnswer(wrong, answer);
-        chatManager.ShowChoice();
         isFirstSelect = true;
     }
 
     public void Select(int selected)
     {
+        //GameManager.Instance.GetAudioController().PlayEffect(AudioController.EFFECT.)
         chatManager.CloseChoice();
         //Debug.Log("selected:"+selected+", answer:"+answerNum);
         GameManager.Instance.isChoiceRight = (answerNum == selected);
@@ -354,9 +363,12 @@ public class ChatUI : MonoBehaviour
         List<ChatData> personalChat = DataManager.Instance.GetChatList(episodeIndex, DataManager.DATATYPE.PERSONAL);
         for(int i=0; i<personalChat.Count; i++)
         {
-            GameManager.Instance.GetAudioController().PlayEffect(AudioController.EFFECT.POP);
             bool isSend = (personalChat[i].character == "아트님");
-            if (i > 2) yield return new WaitForSeconds(chatData.dt);
+            if (i > 2)
+            {
+                yield return new WaitForSeconds(chatData.dt);
+                GameManager.Instance.GetAudioController().PlayEffect(AudioController.EFFECT.POP);
+            }
             chatData = personalChat[i];
             SetUI();
 
@@ -367,9 +379,25 @@ public class ChatUI : MonoBehaviour
         yield return null;
     }
 
-    private IEnumerator WaitAndExit(GameManager.SCENE scene)
+    private IEnumerator WaitAndExit(GameManager.SCENE scene, float waitTime)
     {
-        yield return new WaitForSeconds(2f);
+        Debug.Log("waitTime:" + waitTime);
+        yield return new WaitForSeconds(waitTime);
+
+        // 엔딩으로 가기 전이면 페이드아웃
+        if (scene == GameManager.SCENE.ENDING)
+        {
+            float time = 0f;
+            Color color = fadeoutImg.color;
+            while (time < 2f)
+            {
+                time += (Time.deltaTime * GameManager.Instance.GetPlaySpeed());
+                color.a = time * (1 / 2f);
+                fadeoutImg.color = color;
+                yield return null;
+            }
+        }
+        fadeoutImg.color = new Color(0, 0, 0, 1);
 
         GameManager.Instance.ClearReadCount();
         GameManager.Instance.ChangeScene(scene);

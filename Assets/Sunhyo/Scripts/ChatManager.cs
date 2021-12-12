@@ -22,6 +22,14 @@ public class ChatManager : MonoBehaviour
 
     private string first, second;
 
+    private Button chatbarBtn;
+
+    private void Awake()
+    {
+        chatbarBtn = ChatBar.GetComponent<Button>();
+        chatbarBtn.interactable = false;
+    }
+
     public void Chat(bool isSend, string text, string s_time, string name = "", string readCount = "", string img = "", string fileName = "")
     {
         BubbleScript Bubble = Instantiate(isSend ? playerBubble : npcBubble).GetComponent<BubbleScript>();
@@ -98,6 +106,7 @@ public class ChatManager : MonoBehaviour
     {
         StopAllCoroutines();
 
+        ChatText.color = new Color(ChatText.color.r, ChatText.color.g, ChatText.color.b, 1);
         ChatBar.SetActive(false);
 
         ChatScreen.offsetMin = new Vector2(0, 490);   // stretch left, stretch bottom
@@ -126,6 +135,9 @@ public class ChatManager : MonoBehaviour
         bottomPanel.sizeDelta = new Vector2(0, 150);
 
         ChatBar.SetActive(true);
+        ChatText.text = "";
+        answerState.text = "독백";
+        chatbarBtn.interactable = false;
 
         scrollBar.value = 0f;
     }
@@ -210,6 +222,7 @@ public class ChatManager : MonoBehaviour
         ChatText.text = "ANSWER";
         answerState.text = "답장";
 
+        chatbarBtn.interactable = true;
         StartCoroutine("FadeTextToZeroAlpha");
     }
 
