@@ -21,10 +21,12 @@ public class MainUI : MonoBehaviour
         }
     }
 
+    // 각 함수들은 <Button> 컴포넌트에서 수동으로 연결하여 사용중
+
     public void Login()
     {
         GameManager.Instance.ChangeScene(GameManager.SCENE.CHATLIST);
-        GameManager.Instance.GetAudioController().PlayEffect(AudioController.EFFECT.START);
+        GameManager.Instance.Audio.PlayEffect(AudioController.EFFECT.START);
     }
 
     public void Quit()

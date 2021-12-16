@@ -44,7 +44,7 @@ public class ChatListManager : MonoBehaviour
         isEntered[0] = true;
 
         // 튜토리얼이 끝났다면 읽음처리
-        if (GameManager.Instance.IsTutorialFinished())
+        if (GameManager.Instance.IsTutorialFinished)
         {
             isEntered[5] = true;
         }

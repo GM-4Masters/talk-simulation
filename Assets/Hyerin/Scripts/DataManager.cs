@@ -6,10 +6,10 @@ public class DataManager : MonoBehaviour
     private static DataManager instance;
 
     //private List<ChatData> chatDataList;
-    private List<List<ChatData>> chatDataList = new List<List<ChatData>>();
-    private List<List<ChatData>> subDataList = new List<List<ChatData>>();
-    private List<ChatData> tutorial = new List<ChatData>();
-    private List<List<ChatData>> personalChat = new List<List<ChatData>>();
+    private List<List<ChatData>> mainChatList = new List<List<ChatData>>();
+    private List<List<ChatData>> subChatList = new List<List<ChatData>>();
+    private List<ChatData> tutorialChat = new List<ChatData>();
+    private List<List<ChatData>> personalChatList = new List<List<ChatData>>();
 
     public List<string> characterList = new List<string>(){ 
         "독백", "선택지", "게임시작", "아트님", "시스템", "입장", "퇴장",
@@ -62,16 +62,104 @@ public class DataManager : MonoBehaviour
         LoadChoiceData("choicedata");
     }
 
+    public List<ChatData> GetChatList(int episodeIndex, DATATYPE type)
+    {
+        List<ChatData> data = new List<ChatData>();
+        if (type == DATATYPE.MAIN) data = mainChatList[episodeIndex];
+        else if (type == DATATYPE.SUB) data = subChatList[episodeIndex];
+        else if (type == DATATYPE.PERSONAL) data = personalChatList[episodeIndex];
+        else data = tutorialChat;
+
+        return data;
+    }
+
+    public List<ChatData> GetChatList(int episodeIndex, GameManager.CHATROOM chatroom)
+    {
+        List<ChatData> data = new List<ChatData>();
+        if (chatroom == GameManager.CHATROOM.팀단톡) data = mainChatList[episodeIndex];
+        else if (chatroom == GameManager.CHATROOM.MasterTalk) data = tutorialChat;
+        else
+        {
+            for (int i = 0; i < subChatList[episodeIndex].Count; i++)
+            {
+                if (subChatList[episodeIndex][i].chatroom == chatroom.ToString())
+                    data.Add(subChatList[episodeIndex][i]);
+            }
+        }
+
+        return data;
+    }
+
+    public ChatData GetMainChat(int episodeIndex, int chatIndex)
+    {
+        return mainChatList[episodeIndex][chatIndex];
+        //return chatDataList[chatIndex];
+    }
+
+    public ChatData GetLastMainChat(bool isGoodEnding, int episodeNum)
+    {
+        // 엔딩에 따라 끝지점 지정
+        int last = (isGoodEnding) ?
+            goodChoiceList[episodeNum][GameManager.Instance.ChoiceNum][1] :
+            badChoiceList[episodeNum][GameManager.Instance.ChoiceNum][1];
+
+        // 끝에서부터 뒤로가면서 끝지점 인덱스보다 작고, 단톡방이고, 사람인 가장 첫 데이터 리턴
+        for (int i = mainChatList[episodeNum].Count - 1; i >= 0; i--)
+        {
+            int charIndex = characterList.IndexOf(mainChatList[episodeNum][i].character);
+            if (mainChatList[episodeNum][i].index <= last &&
+                mainChatList[episodeNum][i].chatroom == chatroomList[0] &&
+                (charIndex > 6 || charIndex == 3))
+            {
+                return mainChatList[episodeNum][i];
+            }
+        }
+        return null;
+    }
+
+    public ChatData GetFirstTutorial()
+    {
+        return tutorialChat[0];
+    }
+
+    public ChatData GetLastTutorial()
+    {
+        return tutorialChat[tutorialChat.Count - 1];
+    }
+
     public string GetPersonalChatName(int episodeNum)
     {
-        return personalChat[episodeNum][0].character;
+        return personalChatList[episodeNum][0].character;
     }
+
+
+    public int GetBadEndingOffset(int episodeIndex, int choiceNum)
+    {
+        return badChoiceList[episodeIndex][choiceNum][0] - goodChoiceList[episodeIndex][choiceNum][0];
+    }
+
+    public int GetEpisodeSize(int episodeIndex)
+    {
+        return mainChatList[episodeIndex].Count;
+    }
+
+    public bool IsSavePoint(int episodeNum, int index)
+    {
+        if (GameManager.Instance.ChoiceNum < 0 || GameManager.Instance.ChoiceNum == goodChoiceList[episodeNum].Count - 1) return false;
+        return (goodChoiceList[episodeNum][GameManager.Instance.ChoiceNum][0] == index);
+    }
+
 
     // 마지막 분기인지 확인
     public bool IsLastDialogueSet(int episodeNum, int index)
     {
         if (episodeNum == 2) return (badChoiceList[episodeNum][badChoiceList[episodeNum].Count - 1][1] < index);
         else return (badChoiceList[episodeNum][badChoiceList[episodeNum].Count - 2][1] < index);
+    }
+
+    public bool IsLastBadEndingChat(int episodeNum, int index)
+    {
+        return (index == badChoiceList[episodeNum][badChoiceList[episodeNum].Count - 1][1]);
     }
 
     // 해당 채팅.index 값이 범위에 속하는지 판단(반대 범위에 속하지 않아야 참을 반환)
@@ -101,43 +189,7 @@ public class DataManager : MonoBehaviour
         //else return (chatIndex >= badChoiceList[episodeNum][choiceNum][0] && chatIndex <= badChoiceList[episodeNum][choiceNum][1]);
     }
 
-    public bool IsLastBadEndingChat(int index)
-    {
-        int episodeIndex = GameManager.Instance.GetEpisodeIndex();
-        return (index == badChoiceList[episodeIndex][badChoiceList[episodeIndex].Count-1][1]);
-    }
-
-    public bool IsSavePoint(int index, int episodeNum)
-    {
-        if (GameManager.Instance.choiceNum < 0 || GameManager.Instance.choiceNum==goodChoiceList[episodeNum].Count-1) return false;
-        return (goodChoiceList[episodeNum][GameManager.Instance.choiceNum][0] == index);
-    }
-
-    public ChatData GetLastChat(bool isGoodEnding, int episodeNum)
-    {
-        // 엔딩에 따라 끝지점 지정
-        int last = (isGoodEnding) ?
-            goodChoiceList[episodeNum][GameManager.Instance.choiceNum][1]:
-            badChoiceList[episodeNum][GameManager.Instance.choiceNum][1];
-
-        // 끝에서부터 뒤로가면서 끝지점 인덱스보다 작고, 단톡방이고, 사람인 가장 첫 데이터 리턴
-        for (int i=chatDataList[episodeNum].Count-1; i>=0 ; i--)
-        {
-            int charIndex = characterList.IndexOf(chatDataList[episodeNum][i].character);
-            if(chatDataList[episodeNum][i].index<=last &&
-                chatDataList[episodeNum][i].chatroom==chatroomList[0] &&
-                (charIndex>6 || charIndex == 3))
-            {
-                return chatDataList[episodeNum][i];
-            }
-        }
-        return null;
-    }
-
-    public int GetBadEndingOffset(int episodeIndex, int choiceNum)
-    {
-        return badChoiceList[episodeIndex][choiceNum][0] - goodChoiceList[episodeIndex][choiceNum][0];
-    }
+    #region 데이터 로드
 
     private void LoadNoticeData(string fileName)
     {
@@ -205,32 +257,32 @@ public class DataManager : MonoBehaviour
 
     private void LoadChatData()
     {
-        tutorial = CSVReader.Read("chatData_tutorial");
+        tutorialChat = CSVReader.Read("chatData_tutorial");
 
         for (int i = 0; i < 3; i++)
         {
-            chatDataList.Add(CSVReader.Read("chatData_ep" + (i+1)));
+            mainChatList.Add(CSVReader.Read("chatData_ep" + (i+1)));
 
             if (i != 2)
             {
                 //개인톡 따로 저장
-                for(int j=0; j<chatDataList[i].Count; j++)
+                for(int j=0; j<mainChatList[i].Count; j++)
                 {
-                    personalChat.Add(new List<ChatData>());
-                    if (chatDataList[i][j].chatroom != "팀단톡")
+                    personalChatList.Add(new List<ChatData>());
+                    if (mainChatList[i][j].chatroom != "팀단톡")
                     {
-                        personalChat[i].Add(chatDataList[i][j]);
+                        personalChatList[i].Add(mainChatList[i][j]);
                     }
                 }
 
                 // 에피소드 1,2 마지막 개인톡 3개 잘라냄
                 for (int j = 0; j < 3; j++)
                 {
-                    chatDataList[i].RemoveAt(chatDataList[i].Count - 1);
+                    mainChatList[i].RemoveAt(mainChatList[i].Count - 1);
                 }
             }
 
-            subDataList.Add(CSVReader.Read("chatData_SubEp" + (i + 1) + "Str"));
+            subChatList.Add(CSVReader.Read("chatData_SubEp" + (i + 1) + "Str"));
         }
 
         GameManager.Instance.mainEpisodeCnt = new List<int>();
@@ -239,55 +291,7 @@ public class DataManager : MonoBehaviour
             GameManager.Instance.mainEpisodeCnt.Add(GetEpisodeSize(i));
         }
     }
-    
-    public int GetEpisodeSize(int episodeIndex)
-    {
-        return chatDataList[episodeIndex].Count;
-    }
-
-    public List<ChatData> GetChatList(int episodeIndex, DATATYPE type)
-    {
-        List<ChatData> data = new List<ChatData>();
-        if (type == DATATYPE.MAIN) data = chatDataList[episodeIndex];
-        else if (type == DATATYPE.SUB) data = subDataList[episodeIndex];
-        else if (type == DATATYPE.PERSONAL) data = personalChat[episodeIndex];
-        else data = tutorial;
-
-        return data;
-    }
-
-    public List<ChatData> GetChatList(int episodeIndex, string chatroom)
-    {
-        List<ChatData> data = new List<ChatData>();
-        if (chatroom == "팀단톡") data = chatDataList[episodeIndex];
-        else if (chatroom == "튜토리얼") data = tutorial;
-        else
-        {
-            for(int i=0; i<subDataList[episodeIndex].Count; i++)
-            {
-                if (subDataList[episodeIndex][i].chatroom == chatroom)
-                    data.Add(subDataList[episodeIndex][i]);
-            }
-        }
-
-        return data;
-    }
-
-    public ChatData GetChatData(int episodeIndex, int chatIndex)
-    {
-        return chatDataList[episodeIndex][chatIndex];
-        //return chatDataList[chatIndex];
-    }
-    public ChatData GetFirstTutorial()
-    {
-        return tutorial[0];
-    }
-
-    public ChatData GetLastTutorial()
-    {
-        return tutorial[tutorial.Count - 1];
-    }
-
+    #endregion 데이터 로드 --------------------------------------------------------------------------------------
 }
 
 public class ChatData

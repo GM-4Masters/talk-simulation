@@ -92,7 +92,7 @@ public class ChatListUI : MonoBehaviour
             readIcon[i].SetActive(isEntered[i]);
         }
 
-        int episodeIndex = GameManager.Instance.GetEpisodeIndex();
+        int episodeIndex = GameManager.Instance.EpisodeIndex;
 
         // 단톡방 이모지, 채팅방 아이콘 세팅
         groupTalkEmoji.sprite = Resources.Load<Sprite>("Sprites/Emoji/"+ Mathf.Clamp(episodeIndex+1,0,5));
@@ -136,14 +136,14 @@ public class ChatListUI : MonoBehaviour
         yield return new WaitForSeconds(0.05f);
         // 게임시작 전 시점에는 가장 최근 메시지, 에피소드 끝난 후에는 가장 최근 사람 메시지,
         // 나머지 경우(에피소드 진행 중 강종 후 재시작)에는 세이브포인트 시점 메시지를 출력
-        if (GameManager.Instance.choiceNum == -1) chatData = DataManager.Instance.GetChatData(episodeIndex,GameManager.Instance.currentChatIndex-1);
-        else if (GameManager.Instance.IsEpisodeFinished()) chatData = DataManager.Instance.GetLastChat(GameManager.Instance.ending == GameManager.ENDING.NORMAL, episodeIndex);
-        else chatData = DataManager.Instance.GetChatData(episodeIndex, GameManager.Instance.lastChatIndex + 1);
+        if (GameManager.Instance.ChoiceNum == -1) chatData = DataManager.Instance.GetMainChat(episodeIndex,GameManager.Instance.CurrentChatIndex-1);
+        else if (GameManager.Instance.IsEpisodeFinished) chatData = DataManager.Instance.GetLastMainChat(GameManager.Instance.Ending == GameManager.ENDING.NORMAL, episodeIndex);
+        else chatData = DataManager.Instance.GetMainChat(episodeIndex, GameManager.Instance.LastChatIndex + 1);
         SetChatroomBlock(0, chatData);
 
 
         // 에피소드 끝났다면 갠톡 세팅
-        if (GameManager.Instance.IsEpisodeFinished())
+        if (GameManager.Instance.IsEpisodeFinished)
         {
             List<ChatData> personalChat = DataManager.Instance.GetChatList(episodeIndex, DataManager.DATATYPE.PERSONAL);
             //Debug.Log("personalchat[0]:" + personalChat[0].chatroom);
@@ -197,19 +197,19 @@ public class ChatListUI : MonoBehaviour
     private void EnterChatroom(int index)
     {
         // 에피소드 종료 후 입장 시
-        if (GameManager.Instance.IsEpisodeFinished() && index==0)
+        if (GameManager.Instance.IsEpisodeFinished && index==0)
         {
             if (popupEffectCrt != null) StopCoroutine(popupEffectCrt);
             popupEffectCrt = PopupEffectCrt();
             StartCoroutine(popupEffectCrt);
             return;
         }
-        chatListBlock[0].GetComponent<Button>().interactable = !GameManager.Instance.IsEpisodeFinished();
+        chatListBlock[0].GetComponent<Button>().interactable = !GameManager.Instance.IsEpisodeFinished;
         //Debug.Log("인덱스 : " + index);
         ChatListManager.Instance.SetIsEntered(index, true);
         ChatListManager.Instance.Save();
         //Debug.Log("안읽음 아이콘 제거");
-        GameManager.Instance.ChangeChatroom(index);
+        GameManager.Instance.Chatroom = (GameManager.CHATROOM)index;
         GameManager.Instance.ChangeScene(GameManager.SCENE.INGAME);
     }
 

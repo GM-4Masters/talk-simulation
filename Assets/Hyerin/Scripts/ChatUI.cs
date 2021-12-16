@@ -46,21 +46,22 @@ public class ChatUI : MonoBehaviour
     {
         fadeoutImg.color = new Color(0, 0, 0, 0);
 
-        episodeIndex = GameManager.Instance.GetEpisodeIndex();
-        chatroomIndex = DataManager.Instance.chatroomList.IndexOf(GameManager.Instance.chatroom);
-        data = DataManager.Instance.GetChatList(episodeIndex, GameManager.Instance.chatroom);
+        episodeIndex = GameManager.Instance.EpisodeIndex;
+        chatroomIndex = (int)GameManager.Instance.Chatroom;
+        data = DataManager.Instance.GetChatList(episodeIndex, GameManager.Instance.Chatroom);
 
         if (episodeIndex >= 0)
         {
             // 방제 및 공지 설정
-            string chatroomName = GameManager.Instance.chatroom;
+            string chatroomName = GameManager.Instance.Chatroom.ToString();
             if (chatroomIndex == 0) chatroomName = "4Master팀";
-            else if (GameManager.Instance.chatroom == "튜토리얼") chatroomName = "4MasterTalk";
+            //else if (GameManager.Instance.chatroom == "튜토리얼") chatroomName = "4MasterTalk";
             chatManager.SetChatScreen(chatroomName, DataManager.Instance.noticeList[chatroomIndex][episodeIndex]);
 
 
             // 현재 채팅방이 에피소드 관련 갠톡이면 에피소드 후 갠톡 진행
-            if (GameManager.Instance.IsEpisodeFinished() && GameManager.Instance.chatroom.Equals(DataManager.Instance.GetPersonalChatName(episodeIndex)))
+            if (GameManager.Instance.IsEpisodeFinished &&
+                GameManager.Instance.Chatroom.ToString().Equals(DataManager.Instance.GetPersonalChatName(episodeIndex)))
             {
                 StartCoroutine(PersonalTalkCrt());
             }
@@ -90,7 +91,7 @@ public class ChatUI : MonoBehaviour
         if (chatroomIndex != 0)
         {
             // 팀단톡 아니면 읽음표시 비활성화
-            List<Text> readCountTxt = GameManager.Instance.GetReadCountTxt();
+            List<Text> readCountTxt = GameManager.Instance.ReadCountTxt;
             for (int i = 0; i < readCountTxt.Count; i++)
             {
                 readCountTxt[i].enabled = false;
@@ -103,31 +104,28 @@ public class ChatUI : MonoBehaviour
         // 팀 단톡일 경우
         if (chatroomIndex == 0)
         {
-            int recentIndex = GameManager.Instance.currentChatIndex;
+            int recentIndex = GameManager.Instance.CurrentChatIndex;
 
             // 새로 출력할 것이 생겼다면
-            if (GameManager.Instance.lastChatIndex != recentIndex)
+            if (GameManager.Instance.LastChatIndex != recentIndex)
             {
-                for(int i=GameManager.Instance.lastChatIndex+1; i<=recentIndex; i++)
+                for(int i=GameManager.Instance.LastChatIndex + 1; i<=recentIndex; i++)
                 {
-                    chatData = DataManager.Instance.GetChatData(episodeIndex, i);
+                    chatData = DataManager.Instance.GetMainChat(episodeIndex, i);
                     // 팀 단톡에서 개인톡을 받았을 때
                     if (chatData.chatroom != "팀단톡")
                     {
-                        if (GameManager.Instance.GetEndingType()==GameManager.ENDING.NORMAL)
+                        if (GameManager.Instance.Ending==GameManager.ENDING.NORMAL)
                         {
                             ShowNotification();
                         }
                         if ( recentIndex == GameManager.Instance.mainEpisodeCnt[episodeIndex] - 1)
                         {
-                            if (GameManager.Instance.GetEndingType() == GameManager.ENDING.NORMAL)
-                            {
-                                StartCoroutine(WaitAndExit(GameManager.SCENE.CHATLIST, 2f));
-                            }
-                            else
-                            {
-                                StartCoroutine(WaitAndExit(GameManager.SCENE.ENDING, 2f));
-                            }
+                            GameManager.SCENE scene = 
+                                (GameManager.Instance.Ending == GameManager.ENDING.NORMAL) ?
+                                GameManager.SCENE.CHATLIST : GameManager.SCENE.ENDING;
+
+                            StartCoroutine(WaitAndExit(scene, 2f));
                         }
                     }
                     else
@@ -141,7 +139,7 @@ public class ChatUI : MonoBehaviour
                         Play();
                         SetUI();
                     }
-                    GameManager.Instance.lastChatIndex = recentIndex;
+                    GameManager.Instance.LastChatIndex = recentIndex;
                 }
             }
         }
@@ -150,7 +148,7 @@ public class ChatUI : MonoBehaviour
     // 출력 대상 대화인지 판단(선택지에 따라)
     private bool IsRightDialogue()
     {
-        int choiceNum = GameManager.Instance.choiceNum;
+        int choiceNum = GameManager.Instance.ChoiceNum;
 
         if (choiceNum < 0) return true;
 
@@ -158,10 +156,10 @@ public class ChatUI : MonoBehaviour
         // 현재 채팅이 해당 범위에 속하는지를 판단
         if (DataManager.Instance.IsLastDialogueSet(episodeIndex, chatData.index))
         {
-            bool isGoodEnding = (GameManager.Instance.ending == GameManager.ENDING.NORMAL);
+            bool isGoodEnding = (GameManager.Instance.Ending == GameManager.ENDING.NORMAL);
             return (DataManager.Instance.IsInRange(chatData.index, isGoodEnding, episodeIndex));
         }
-        else return (DataManager.Instance.IsInRange(chatData.index, GameManager.Instance.isChoiceRight, episodeIndex));
+        else return (DataManager.Instance.IsInRange(chatData.index, GameManager.Instance.IsChoiceRight, episodeIndex));
     }
 
     public void Play()
@@ -170,7 +168,7 @@ public class ChatUI : MonoBehaviour
         {
             //Debug.Log("play skipped:" + chatData.index);
             GameManager.Instance.SkipTime();
-            GameManager.Instance.ChangeWaitFlag(false);
+            GameManager.Instance.IsWait=false;
             return;
         };
 
@@ -184,16 +182,16 @@ public class ChatUI : MonoBehaviour
                 break;
             case "게임시작":
                 isGameStart = true;
-                GameManager.Instance.ChangeWaitFlag(false);
+                GameManager.Instance.IsWait=false;
                 break;
             default:
-                GameManager.Instance.ChangeWaitFlag(false);
+                GameManager.Instance.IsWait=false;
                 break;
         }
 
         if (isGameStart && (talkable.Contains(chatData.character) || chatData.character == "아트님"))
         {
-            GameManager.Instance.GetAudioController().PlayEffect(AudioController.EFFECT.POP);
+            GameManager.Instance.Audio.PlayEffect(AudioController.EFFECT.POP);
         }
     }
 
@@ -216,10 +214,10 @@ public class ChatUI : MonoBehaviour
 
             // 단톡방이고 안읽은숫자가 0이 아니면 읽은숫자 표시
             string numStr = "";
-            if (GameManager.Instance.chatroom == DataManager.Instance.chatroomList[0] &&
-                GameManager.Instance.groupTalkUnChecked != 0)
+            if (GameManager.Instance.Chatroom == GameManager.CHATROOM.팀단톡 &&
+                GameManager.Instance.GroupTalkUnChecked != 0)
             {
-                numStr = GameManager.Instance.groupTalkUnChecked.ToString();
+                numStr = GameManager.Instance.GroupTalkUnChecked.ToString();
             }
             chatManager.Chat(isSend, text, chatData.time, chatData.character, numStr, image, fileName);
         }
@@ -251,7 +249,7 @@ public class ChatUI : MonoBehaviour
     private IEnumerator MonologueCrt(float second)
     {
         yield return new WaitForSeconds(second);
-        GameManager.Instance.ChangeWaitFlag(false);
+        GameManager.Instance.IsWait=false;
     }
 
     public void WaitForSelect()
@@ -263,12 +261,12 @@ public class ChatUI : MonoBehaviour
             return;
         }
         // 선택지 실행 후 대기(정답 위치 랜덤)
-        GameManager.Instance.ChangeWaitFlag(true);
+        GameManager.Instance.IsWait=true;
         int answerNum = Random.Range(0, 2);
         this.answerNum = answerNum;
 
-        string answer = DataManager.Instance.GetChatData(episodeIndex,
-            GameManager.Instance.currentChatIndex - 1).text;
+        string answer = DataManager.Instance.GetMainChat(episodeIndex,
+            GameManager.Instance.CurrentChatIndex - 1).text;
         string wrong = chatData.text;
         if (answerNum == 0) chatManager.SetAnswer(answer, wrong);
         else chatManager.SetAnswer(wrong, answer);
@@ -280,21 +278,21 @@ public class ChatUI : MonoBehaviour
         //GameManager.Instance.GetAudioController().PlayEffect(AudioController.EFFECT.)
         chatManager.CloseChoice();
         //Debug.Log("selected:"+selected+", answer:"+answerNum);
-        GameManager.Instance.isChoiceRight = (answerNum == selected);
+        GameManager.Instance.IsChoiceRight = (answerNum == selected);
         if (answerNum != selected) GameManager.Instance.ChangeEnding();
-        GameManager.Instance.choiceNum++;
-        GameManager.Instance.ChangeWaitFlag(false);
+        GameManager.Instance.ChoiceNum++;
+        GameManager.Instance.IsWait=false;
     }
 
     public void ChangeReaderCount(int value)
     {
-        GameManager.Instance.groupTalkUnChecked += value;
-        List<Text> readCountTxt = GameManager.Instance.GetReadCountTxt();
+        GameManager.Instance.GroupTalkUnChecked += value;
+        List<Text> readCountTxt = GameManager.Instance.ReadCountTxt;
         for(int i=0; i<readCountTxt.Count; i++)
         {
-            string numStr = (GameManager.Instance.groupTalkUnChecked == 0) ? 
-                "" : GameManager.Instance.groupTalkUnChecked.ToString();
-            if (readCountTxt[i].text!="" && int.Parse(readCountTxt[i].text)> GameManager.Instance.groupTalkUnChecked)
+            string numStr = (GameManager.Instance.GroupTalkUnChecked == 0) ? 
+                "" : GameManager.Instance.GroupTalkUnChecked.ToString();
+            if (readCountTxt[i].text!="" && int.Parse(readCountTxt[i].text)> GameManager.Instance.GroupTalkUnChecked)
                 readCountTxt[i].text = numStr;
         }
     }
@@ -312,11 +310,11 @@ public class ChatUI : MonoBehaviour
         }
 
         // 갠톡 종료 후 다음 에피소드
-        if (GameManager.Instance.IsEpisodeFinished() &&
-            GameManager.Instance.chatroom.Equals(DataManager.Instance.GetPersonalChatName(episodeIndex))) GameManager.Instance.GoToNextEpisode();
+        if (GameManager.Instance.IsEpisodeFinished &&
+            GameManager.Instance.Chatroom.ToString().Equals(DataManager.Instance.GetPersonalChatName(episodeIndex))) GameManager.Instance.GoToNextEpisode();
 
         // 튜토리얼 완료(다음 에피소드)
-        if (chatroomIndex == 5 && !GameManager.Instance.IsTutorialFinished()) GameManager.Instance.FinishTutorial();
+        if (chatroomIndex == 5 && !GameManager.Instance.IsTutorialFinished) GameManager.Instance.FinishTutorial();
 
         // 일반 채팅방 나가기
         //GameManager.Instance.Save();
@@ -350,7 +348,7 @@ public class ChatUI : MonoBehaviour
         List<ChatData> tutorialChat = DataManager.Instance.GetChatList(episodeIndex, DataManager.DATATYPE.TUTORIAL);
         for (int i = 0; i < tutorialChat.Count; i++)
         {
-            GameManager.Instance.GetAudioController().PlayEffect(AudioController.EFFECT.POP);
+            GameManager.Instance.Audio.PlayEffect(AudioController.EFFECT.POP);
             chatData = tutorialChat[i];
             SetUI();
             yield return new WaitForSeconds(2f);
@@ -367,7 +365,7 @@ public class ChatUI : MonoBehaviour
             if (i > 2)
             {
                 yield return new WaitForSeconds(chatData.dt);
-                GameManager.Instance.GetAudioController().PlayEffect(AudioController.EFFECT.POP);
+                GameManager.Instance.Audio.PlayEffect(AudioController.EFFECT.POP);
             }
             chatData = personalChat[i];
             SetUI();
@@ -391,7 +389,7 @@ public class ChatUI : MonoBehaviour
             Color color = fadeoutImg.color;
             while (time < 2f)
             {
-                time += (Time.deltaTime * GameManager.Instance.GetPlaySpeed());
+                time += (Time.deltaTime * GameManager.Instance.Speed);
                 color.a = time * (1 / 2f);
                 fadeoutImg.color = color;
                 yield return null;
@@ -416,7 +414,7 @@ public class ChatUI : MonoBehaviour
 
     private IEnumerator NotificationCrt()
     {
-        GameManager.Instance.GetAudioController().PlayEffect(AudioController.EFFECT.ALERT);
+        GameManager.Instance.Audio.PlayEffect(AudioController.EFFECT.ALERT);
 
         // 투명도 0(0.5초) -> 0.7(1초대기) -> (0.5초)0 으로 알림창 띄움
         float time = 0f;

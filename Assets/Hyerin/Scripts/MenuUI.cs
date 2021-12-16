@@ -50,14 +50,6 @@ public class MenuUI : MonoBehaviour
         audioController.SetEffectVolume(value*0.2f);
     }
 
-    public void Close()
-    {
-        Time.timeScale = 1f;
-        audioController.Resume();
-        isMenuPopupActive = false;
-        menuPanel.SetActive(false);
-    }
-
     public void ShowMenuPopup()
     {
         Time.timeScale = 0f;
@@ -66,6 +58,8 @@ public class MenuUI : MonoBehaviour
         menuPopup.SetActive(true);
         exitPopup.SetActive(false);
     }
+
+    #region <Button> 컴포넌트에서 수동으로 연결한 함수
 
     public void ShowExitPopup()
     {
@@ -80,8 +74,17 @@ public class MenuUI : MonoBehaviour
         Close();
     }
 
+    public void Close()
+    {
+        Time.timeScale = 1f;
+        audioController.Resume();
+        isMenuPopupActive = false;
+        menuPanel.SetActive(false);
+    }
+
     public void Quit()
     {
         Application.Quit();
     }
+    #endregion Button 컴포넌트에서 사용
 }
