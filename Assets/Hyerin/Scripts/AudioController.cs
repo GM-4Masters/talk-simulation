@@ -34,13 +34,13 @@ public class AudioController : MonoBehaviour
 
     public void Pause()
     {
-        bgmAudio.Pause();
+        //bgmAudio.Pause();
         effectAudio.Pause();
     }
 
     public void Resume()
     {
-        bgmAudio.Play();
+        //bgmAudio.Play();
         effectAudio.Play();
     }
 
@@ -78,7 +78,7 @@ public class AudioController : MonoBehaviour
 
     public void PlayBGM(BGM audio)
     {
-        //if (bgmAudio.clip != null && bgmAudio.clip.Equals(bgmClip[(int)audio])) return;
+        if (bgmAudio.clip != null && bgmAudio.clip.Equals(bgmClip[(int)audio])) return;
         if (bgmAudio.isPlaying) bgmAudio.Stop();
         bgmAudio.clip = bgmClip[(int)audio];
         bgmAudio.Play();

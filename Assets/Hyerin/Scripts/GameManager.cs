@@ -184,12 +184,16 @@ public class GameManager : MonoBehaviour
         }
 
         // 터치음
+        if (Input.GetMouseButtonDown(0))
+        {
+            audioController.PlayEffect(AudioController.EFFECT.TOUCH);
+        }
         //if (Input.touchCount > 0)
         //{
         //    Touch touch = Input.GetTouch(0);
         //    if (touch.phase == TouchPhase.Began)
         //    {
-        //        GameManager.Instance.GetAudioController().PlayEffect(AudioController.EFFECT.TOUCH);
+        //        audioController.PlayEffect(AudioController.EFFECT.TOUCH);
         //    }
         //}
     }
@@ -356,7 +360,7 @@ public class GameManager : MonoBehaviour
 
     public void ChangeScene(SCENE scene)
     {
-        audioController.StopBGM();
+        //audioController.StopBGM();
         SceneManager.LoadScene((int)scene);
     }
 
@@ -379,6 +383,7 @@ public class GameManager : MonoBehaviour
         {
             currentScene = SCENE.CHATLIST;
             if (chatListUI == null) chatListUI = GameObject.Find("Canvas").GetComponent<ChatListUI>();
+            audioController.PlayBGM(AudioController.BGM.MAIN);
         }
 
         // 인게임(채팅창)
@@ -387,6 +392,11 @@ public class GameManager : MonoBehaviour
             currentScene = SCENE.INGAME;
             if (chatUI == null) chatUI = GameObject.Find("Canvas").GetComponent<ChatUI>();
             if(chatroom == CHATROOM.팀단톡) audioController.PlayIngameBGM();
+            else
+            {
+                string bgmName = "EP" + (episodeIndex + 1);
+                audioController.PlayBGM((AudioController.BGM)System.Enum.Parse(typeof(AudioController.BGM), bgmName));
+            }
         }
 
         // 엔딩
