@@ -31,7 +31,6 @@ public class ChatListManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        isEntered[0] = true;
     }
 
     public void ResetState()
@@ -40,13 +39,11 @@ public class ChatListManager : MonoBehaviour
         {
             isEntered[i] = false;
         }
-        // 단톡방은 항상 읽음 상태임
-        isEntered[0] = true;
 
         // 튜토리얼이 끝났다면 읽음처리
         if (GameManager.Instance.IsTutorialFinished)
         {
-            isEntered[5] = true;
+            isEntered[1] = true;
         }
     }
 

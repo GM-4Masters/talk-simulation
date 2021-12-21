@@ -134,11 +134,18 @@ public class AudioController : MonoBehaviour
     }
     public void PlayEffect(EFFECT audio)
     {
-        effectAudio.PlayOneShot(effectClip[(int)audio]);
+        if (audio.Equals(EFFECT.TYPING))
+        {
+            effectAudio.loop = true;
+            effectAudio.clip = effectClip[(int)audio];
+            effectAudio.Play();
+        }
+        else effectAudio.PlayOneShot(effectClip[(int)audio]);
     }
 
     public void StopEffect()
     {
+        if (effectAudio.clip.Equals(effectClip[(int)EFFECT.TYPING])) effectAudio.loop = false;
         effectAudio.Stop();
     }
     #endregion ===================================================================

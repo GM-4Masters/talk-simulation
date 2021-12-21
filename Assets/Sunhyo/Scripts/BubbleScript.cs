@@ -7,7 +7,7 @@ public class BubbleScript : MonoBehaviour
 {
     public RectTransform BubbleRect, BoxRect, TextRect;
     public GameObject File;
-    public Text NameText, TimeText, ReadCountText, FileNameTxt;
+    public Text NameText, TimeText, ReadCountText, FileNameTxt, ChatText;
     public Image ProfileImage, ChatImage;
     public string Name, Time;
 }

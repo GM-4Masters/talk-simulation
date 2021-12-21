@@ -1,26 +1,42 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+static class Constants
+{
+    public static readonly string grouptalk = "팀단톡";
+    public static readonly string mastertalk = "4MasterTalk";
+
+    public static readonly string grouptalkName = "4Master팀";
+
+    public static readonly string talkable = "아트님,팀장님(기획),김산호(플밍),벅찬우,이채린(플밍),엄마,GameMasters,4MasterTalk";
+    public const string me = "아트님";
+
+
+    public const string monologue = "독백";
+    public const string choice = "선택지";
+    public const string gameStart = "게임시작";
+}
+
 public class DataManager : MonoBehaviour
 {
     private static DataManager instance;
 
     //private List<ChatData> chatDataList;
     private List<List<ChatData>> mainChatList = new List<List<ChatData>>();
-    private List<List<ChatData>> subChatList = new List<List<ChatData>>();
+    private List<List<List<ChatData>>> subChatList = new List<List<List<ChatData>>>();
     private List<ChatData> tutorialChat = new List<ChatData>();
     private List<List<ChatData>> personalChatList = new List<List<ChatData>>();
 
     public List<string> characterList = new List<string>(){ 
         "독백", "선택지", "게임시작", "아트님", "시스템", "입장", "퇴장",
-        "팀장님", "김산호", "벅찬우", "이채린", "엄마", "GameMasters", "4MasterTalk" };
+        "팀장님(기획)", "김산호(플밍)", "벅찬우", "이채린(플밍)", "엄마", "GameMasters", "4MasterTalk" };
 
     public List<string> chatroomList = new List<string>()
     {
-        "팀단톡", "김산호", "벅찬우", "이채린", "엄마", "4MasterTalk", "GameMasters"
+        "팀단톡", "김산호(플밍)", "벅찬우", "이채린(플밍)", "엄마", "4MasterTalk", "GameMasters"
     };
 
-    public List<List<string>> noticeList = new List<List<string>>();
+    public Dictionary<string, List<string>> noticeList = new Dictionary<string, List<string>>();
     public List<string> endingList = new List<string>();
 
     // 에피소드-선택지번호
@@ -66,26 +82,26 @@ public class DataManager : MonoBehaviour
     {
         List<ChatData> data = new List<ChatData>();
         if (type == DATATYPE.MAIN) data = mainChatList[episodeIndex];
-        else if (type == DATATYPE.SUB) data = subChatList[episodeIndex];
         else if (type == DATATYPE.PERSONAL) data = personalChatList[episodeIndex];
         else data = tutorialChat;
 
         return data;
     }
 
-    public List<ChatData> GetChatList(int episodeIndex, GameManager.CHATROOM chatroom)
+    public List<ChatData> GetChatList(int episodeIndex, string chatroom)
     {
         List<ChatData> data = new List<ChatData>();
-        if (chatroom == GameManager.CHATROOM.팀단톡) data = mainChatList[episodeIndex];
-        else if (chatroom == GameManager.CHATROOM.MasterTalk) data = tutorialChat;
+        if (chatroom == Constants.grouptalk) data = mainChatList[episodeIndex];
+        else if (chatroom == Constants.mastertalk) data = tutorialChat;
         else
         {
             for (int i = 0; i < subChatList[episodeIndex].Count; i++)
             {
-                if (subChatList[episodeIndex][i].chatroom == chatroom.ToString())
-                    data.Add(subChatList[episodeIndex][i]);
+                if (subChatList[episodeIndex][i][0].chatroom.Equals(chatroom))
+                    data = subChatList[episodeIndex][i];
             }
         }
+        // 이 함수에서 개인채팅방 데이터는 반환할 수 없음(DATATYPE을 이용해서 받아와야 함)
 
         return data;
     }
@@ -96,25 +112,31 @@ public class DataManager : MonoBehaviour
         //return chatDataList[chatIndex];
     }
 
-    public ChatData GetLastMainChat(bool isGoodEnding, int episodeNum)
+    // 해당 에피소드의 가장 마지막 대화 가져오기(굿엔딩 에피소드 종료 후 저장 지점. 마지막 에피소드에서는 보여지지 않음)
+    public int GetLastMainChat(int episodeNum)
     {
-        // 엔딩에 따라 끝지점 지정
-        int last = (isGoodEnding) ?
-            goodChoiceList[episodeNum][GameManager.Instance.ChoiceNum][1] :
-            badChoiceList[episodeNum][GameManager.Instance.ChoiceNum][1];
-
-        // 끝에서부터 뒤로가면서 끝지점 인덱스보다 작고, 단톡방이고, 사람인 가장 첫 데이터 리턴
-        for (int i = mainChatList[episodeNum].Count - 1; i >= 0; i--)
+        int index = 0;
+        for(int i=mainChatList[episodeNum].Count-1; i>=0; i--)
         {
-            int charIndex = characterList.IndexOf(mainChatList[episodeNum][i].character);
-            if (mainChatList[episodeNum][i].index <= last &&
-                mainChatList[episodeNum][i].chatroom == chatroomList[0] &&
-                (charIndex > 6 || charIndex == 3))
-            {
-                return mainChatList[episodeNum][i];
-            }
+            if (mainChatList[episodeNum][i].index == goodChoiceList[episodeNum][goodChoiceList[episodeNum].Count - 2][1]) index = i;
         }
-        return null;
+        return index;
+    }
+
+    public List<List<ChatData>> GetAllSubChat(int episodeNum)
+    {
+        return subChatList[episodeNum];
+    }
+
+    // 해당 에피소드의 서브채팅방의 마지막 채팅만을 반환
+    public List<ChatData> GetLastSubChat(int episodeNum)
+    {
+        List<ChatData> result = new List<ChatData>();
+        for(int i=0; i<subChatList[episodeNum].Count; i++)
+        {
+            result.Add(subChatList[episodeNum][i][subChatList[episodeNum][i].Count - 1]);
+        }
+        return result;
     }
 
     public ChatData GetFirstTutorial()
@@ -129,9 +151,16 @@ public class DataManager : MonoBehaviour
 
     public string GetPersonalChatName(int episodeNum)
     {
-        return personalChatList[episodeNum][0].character;
+        return personalChatList[episodeNum][0].chatroom;
     }
 
+    // 에피소드 전환 시 시작지점(게임시작 직전)
+    public int GetStartIndex(int episodeNum)
+    {
+        int index = 0;
+        while (!mainChatList[episodeNum][index].character.Equals(Constants.gameStart)) index++;
+        return index-1;
+    }
 
     public int GetBadEndingOffset(int episodeIndex, int choiceNum)
     {
@@ -163,30 +192,16 @@ public class DataManager : MonoBehaviour
     }
 
     // 해당 채팅.index 값이 범위에 속하는지 판단(반대 범위에 속하지 않아야 참을 반환)
-    public bool IsInRange(int chatIndex, bool isGoodChoice, int episodeNum)
+    public bool IsInRange(int chatIndex, bool isGoodChoice, int episodeNum, int choiceNum)
     {
-        bool result=true;
-        //Debug.Log("idx:" + chatIndex + ", Good:" + isGoodChoice + ", cho:" + choiceNum+", min:"+
-        //    goodChoiceList[episodeNum][choiceNum][0]+", max:"+ goodChoiceList[episodeNum][choiceNum][1]);
         if (isGoodChoice)
         {
-            for(int i=0; i<badChoiceList[episodeNum].Count; i++)
-            {
-                if (chatIndex>=badChoiceList[episodeNum][i][0] && chatIndex<=badChoiceList[episodeNum][i][1]) result = false;
-            }
+            return !(chatIndex >= badChoiceList[episodeNum][choiceNum][0] && chatIndex <= badChoiceList[episodeNum][choiceNum][1]);
         }
         else
         {
-            for (int i = 0; i < goodChoiceList[episodeNum].Count; i++)
-            {
-                if (chatIndex >= goodChoiceList[episodeNum][i][0] && chatIndex <= goodChoiceList[episodeNum][i][1]) result = false;
-            }
+            return !(chatIndex >= goodChoiceList[episodeNum][choiceNum][0] && chatIndex <= goodChoiceList[episodeNum][choiceNum][1]);
         }
-
-        return result;
-
-        //if (isGoodChoice) return (chatIndex >= goodChoiceList[episodeNum][choiceNum][0] && chatIndex <= goodChoiceList[episodeNum][choiceNum][1]);
-        //else return (chatIndex >= badChoiceList[episodeNum][choiceNum][0] && chatIndex <= badChoiceList[episodeNum][choiceNum][1]);
     }
 
     #region 데이터 로드
@@ -198,12 +213,13 @@ public class DataManager : MonoBehaviour
 
         for (int i=0; i<chatroomList.Count; i++)
         {
+            string chatroomName = lines[i * 4].Substring(0,lines[i*4].Length-1);
             List<string> data = new List<string>();
-            for(int j=0; j<3; j++)
+            for(int j=1; j<=3; j++)
             {
-                data.Add(lines[i*3+j]);
+                data.Add(lines[i*4+j]);
             }
-            noticeList.Add(data);
+            noticeList.Add(chatroomName, data);
         }
     }
 
@@ -214,15 +230,19 @@ public class DataManager : MonoBehaviour
 
         int endingIndex = 0;
         string endingTxt = "";
-        foreach (string line in lines)
+        for(int i=0; i<lines.Length; i++)
         {
-            if (line.Contains("-"))
+            if (lines[i].Contains("-"))
             {
                 endingList.Add(endingTxt);
                 endingTxt = "";
                 endingIndex++;
             }
-            else endingTxt+=(line+"\n");
+            else
+            {
+                if (!endingTxt.Equals("")) endingTxt += "\n";
+                endingTxt += (lines[i]);
+            }
         }
     }
 
@@ -265,24 +285,36 @@ public class DataManager : MonoBehaviour
 
             if (i != 2)
             {
-                //개인톡 따로 저장
-                for(int j=0; j<mainChatList[i].Count; j++)
+                //개인톡 따로 저장 후 메인리스트에서 삭제
+                for(int j=0; j< mainChatList[i].Count; j++)
                 {
                     personalChatList.Add(new List<ChatData>());
-                    if (mainChatList[i][j].chatroom != "팀단톡")
+                    if (!mainChatList[i][j].chatroom.Equals(Constants.grouptalk))
                     {
                         personalChatList[i].Add(mainChatList[i][j]);
                     }
                 }
-
-                // 에피소드 1,2 마지막 개인톡 3개 잘라냄
-                for (int j = 0; j < 3; j++)
+                for(int j=0; j<personalChatList[i].Count; j++)
                 {
                     mainChatList[i].RemoveAt(mainChatList[i].Count - 1);
                 }
             }
 
-            subChatList.Add(CSVReader.Read("chatData_SubEp" + (i + 1) + "Str"));
+            int index = 0;
+            List<ChatData> allSubChatList = CSVReader.Read("chatData_SubEp" + (i + 1) + "Str");
+            subChatList.Add(new List<List<ChatData>>());
+            subChatList[i].Add(new List<ChatData>());
+            subChatList[i][index].Add(allSubChatList[0]);
+            for (int j=1; j<allSubChatList.Count; j++)
+            {
+                // 채팅방이 변경되었으면 다음 인덱스에 저장
+                if (!allSubChatList[j - 1].chatroom.Equals(allSubChatList[j].chatroom))
+                {
+                    subChatList[i].Add(new List<ChatData>());
+                    index++;
+                }
+                subChatList[i][index].Add(allSubChatList[j]);
+            }
         }
 
         GameManager.Instance.mainEpisodeCnt = new List<int>();

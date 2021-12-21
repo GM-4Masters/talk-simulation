@@ -274,6 +274,7 @@ MonoBehaviour:
   TimeText: {fileID: 3522518105364508097}
   ReadCountText: {fileID: 4225457236379424634}
   FileNameTxt: {fileID: 3269432960795067890}
+  ChatText: {fileID: 8472224033274837431}
   ProfileImage: {fileID: 0}
   ChatImage: {fileID: 1232055083859695454}
   Name: 
@@ -319,8 +320,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 850, y: 0}
-  m_SizeDelta: {x: 400, y: 0}
+  m_AnchoredPosition: {x: 770, y: 0}
+  m_SizeDelta: {x: 560, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3942782352106796501
 MonoBehaviour:
@@ -365,10 +366,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 10
-    m_Right: 10
-    m_Top: 10
-    m_Bottom: 10
+    m_Left: 20
+    m_Right: 20
+    m_Top: 20
+    m_Bottom: 20
   m_ChildAlignment: 4
   m_Spacing: 10
   m_ChildForceExpandWidth: 0

@@ -3665,7 +3665,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1053663584}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5478e835932457648bbff861317ea49a, type: 3}
+  m_Script: {fileID: 11500000, guid: 4f63fd2aa2ac2fe46898e8e026490dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   characterList:
@@ -3689,7 +3689,7 @@ MonoBehaviour:
   - "\uBC85\uCC2C\uC6B0"
   - "\uC774\uCC44\uB9B0"
   - "\uC5C4\uB9C8"
-  - "\uD29C\uD1A0\uB9AC\uC5BC"
+  - 4MasterTalk
   - GameMasters
   endingList: []
 --- !u!114 &1053663589
@@ -7700,7 +7700,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uC81C\uBAA9\uB4E4\uC5B4\n\uAC00\uB294\uBD80\uBD84"
+  m_Text: "\uB514\uBE44\uC9C4\n\uB514\uBCA8\uB86D"
 --- !u!222 &2069900641
 CanvasRenderer:
   m_ObjectHideFlags: 0

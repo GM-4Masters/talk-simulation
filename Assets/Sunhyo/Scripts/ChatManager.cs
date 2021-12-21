@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.UI;
+using UnityEngine.Playables;
+using System.Text;
 
 public class ChatManager : MonoBehaviour
 {
@@ -24,23 +26,31 @@ public class ChatManager : MonoBehaviour
 
     private Button chatbarBtn;
 
+    private BubbleScript Bubble;
+    private GameObject dateObj;
+    Text firstTxt;
+    Text secondTxt;
+
+    private PlayableDirector chatBarPd;
+
     private void Awake()
     {
         chatbarBtn = ChatBar.GetComponent<Button>();
         chatbarBtn.interactable = false;
+
+        chatBarPd = ChatText.gameObject.GetComponent<PlayableDirector>();
     }
 
     public void Chat(bool isSend, string text, string s_time, string name = "", string readCount = "", string img = "", string fileName = "")
     {
-        BubbleScript Bubble = Instantiate(isSend ? playerBubble : npcBubble).GetComponent<BubbleScript>();
+        Bubble = Instantiate(isSend ? playerBubble : npcBubble).GetComponent<BubbleScript>();
         Bubble.transform.SetParent(contentRect.transform, false);
 
         // 프로필사진 지정
         if(!isSend) Bubble.ProfileImage.sprite = Resources.Load<Sprite>("Sprites/Profile/" + name);
 
         // ReadCount 텍스트 컴포넌트 저장
-        int childNum = (isSend) ? 0 : 2;
-        GameManager.Instance.AddReadCountTxt(Bubble.gameObject.transform.GetChild(childNum).GetChild(2).GetComponent<Text>());
+        GameManager.Instance.AddReadCountTxt(Bubble.ReadCountText);
 
         if (!isSend)
         {
@@ -51,19 +61,29 @@ public class ChatManager : MonoBehaviour
 
         if (img != "")
         {
+            Bubble.BoxRect.sizeDelta = new Vector2(400, Bubble.BoxRect.sizeDelta.y);
             Bubble.TextRect.gameObject.SetActive(false);
             Bubble.ChatImage.sprite = Resources.Load<Sprite>("Sprites/Image/" + img);
         }
 
         if(fileName != "")
         {
+            Bubble.BoxRect.sizeDelta = new Vector2(400, Bubble.BoxRect.sizeDelta.y);
             Bubble.TextRect.gameObject.SetActive(false);
             Bubble.File.SetActive(true);
             Bubble.FileNameTxt.text = fileName; 
         }
 
+        // 글자 수가 적다면 ChatBox 너비 조정
+        if (text.Length > 0 && Encoding.Default.GetByteCount(text) <= 45)
+        {
+            Bubble.BoxRect.sizeDelta = new Vector2(98 + Encoding.Default.GetByteCount(text)*11, Bubble.BoxRect.sizeDelta.y);
+        }
+        // 채팅 메시지의 공백을 '\u00A0'로 변경
+        text = text.Replace(' ', '\u00A0');
+
         Bubble.TimeText.text = s_time;
-        Bubble.TextRect.GetComponent<Text>().text = text;
+        Bubble.ChatText.text = text;
 
         scrollBar.value = 0f;
         Fit(Bubble.BoxRect);
@@ -71,9 +91,9 @@ public class ChatManager : MonoBehaviour
 
     public void SetDate(string date)
     {
-        GameObject obj = Instantiate(DatePrefab);
-        obj.transform.SetParent(contentRect.transform, false);
-        obj.transform.GetChild(0).GetComponent<Text>().text = date;
+        dateObj = Instantiate(DatePrefab);
+        dateObj.transform.SetParent(contentRect.transform, false);
+        dateObj.transform.GetChild(0).GetComponent<Text>().text = date;
     }
 
     void Fit(RectTransform Rect) => LayoutRebuilder.ForceRebuildLayoutImmediate(Rect);
@@ -107,15 +127,17 @@ public class ChatManager : MonoBehaviour
         StopAllCoroutines();
 
         ChatText.color = new Color(ChatText.color.r, ChatText.color.g, ChatText.color.b, 1);
-        ChatBar.SetActive(false);
+        //ChatBar.SetActive(false);
+        chatBarPd.Stop();
+        chatbarBtn.interactable = false;
 
-        ChatScreen.offsetMin = new Vector2(0, 490);   // stretch left, stretch bottom
+        ChatScreen.offsetMin = new Vector2(0, 550);   // stretch left, stretch bottom
         //ChatScreen.anchoredPosition = new Vector2(0, 145);
         //ChatScreen.sizeDelta = new Vector2(0, 880);
-        bottomPanel.sizeDelta = new Vector2(0, 640);
+        bottomPanel.sizeDelta = new Vector2(0, 700);
 
-        Text firstTxt = Choices.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>();
-        Text secondTxt = Choices.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
+        firstTxt = Choices.transform.GetChild(0).transform.GetChild(0).GetComponent<Text>();
+        secondTxt = Choices.transform.GetChild(1).transform.GetChild(0).GetComponent<Text>();
 
         firstTxt.text = first;
         secondTxt.text = second;
@@ -134,10 +156,9 @@ public class ChatManager : MonoBehaviour
         //ChatScreen.sizeDelta = new Vector2(0, 1370);
         bottomPanel.sizeDelta = new Vector2(0, 150);
 
-        ChatBar.SetActive(true);
+        //ChatBar.SetActive(true);
         ChatText.text = "";
         answerState.text = "독백";
-        chatbarBtn.interactable = false;
 
         scrollBar.value = 0f;
     }
@@ -223,30 +244,31 @@ public class ChatManager : MonoBehaviour
         answerState.text = "답장";
 
         chatbarBtn.interactable = true;
-        StartCoroutine("FadeTextToZeroAlpha");
+        //StartCoroutine("FadeTextToZeroAlpha");
+        chatBarPd.Play();
     }
 
-    public IEnumerator FadeTextToFullAlpha() // 알파값 0에서 1로 전환
-    {
-        ChatText.color = new Color(ChatText.color.r, ChatText.color.g, ChatText.color.b, 0);
-        while (ChatText.color.a < 1.0f)
-        {
-            ChatText.color = new Color(ChatText.color.r, ChatText.color.g, ChatText.color.b, ChatText.color.a + (Time.deltaTime / 2.0f));
-            yield return null;
-        }
-        StartCoroutine(FadeTextToZeroAlpha());
-    }
+    //public IEnumerator FadeTextToFullAlpha() // 알파값 0에서 1로 전환
+    //{
+    //    ChatText.color = new Color(ChatText.color.r, ChatText.color.g, ChatText.color.b, 0);
+    //    while (ChatText.color.a < 1.0f)
+    //    {
+    //        ChatText.color = new Color(ChatText.color.r, ChatText.color.g, ChatText.color.b, ChatText.color.a + (Time.deltaTime / 2.0f));
+    //        yield return null;
+    //    }
+    //    StartCoroutine(FadeTextToZeroAlpha());
+    //}
 
-    public IEnumerator FadeTextToZeroAlpha()  // 알파값 1에서 0으로 전환
-    {
-        ChatText.color = new Color(ChatText.color.r, ChatText.color.g, ChatText.color.b, 1);
-        while (ChatText.color.a > 0.0f)
-        {
-            ChatText.color = new Color(ChatText.color.r, ChatText.color.g, ChatText.color.b, ChatText.color.a - (Time.deltaTime / 2.0f));
-            yield return null;
-        }
-        StartCoroutine(FadeTextToFullAlpha());
-    }
+    //public IEnumerator FadeTextToZeroAlpha()  // 알파값 1에서 0으로 전환
+    //{
+    //    ChatText.color = new Color(ChatText.color.r, ChatText.color.g, ChatText.color.b, 1);
+    //    while (ChatText.color.a > 0.0f)
+    //    {
+    //        ChatText.color = new Color(ChatText.color.r, ChatText.color.g, ChatText.color.b, ChatText.color.a - (Time.deltaTime / 2.0f));
+    //        yield return null;
+    //    }
+    //    StartCoroutine(FadeTextToFullAlpha());
+    //}
 
 
 
