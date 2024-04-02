@@ -3,18 +3,18 @@ using UnityEngine;
 
 static class Constants
 {
-    public static readonly string grouptalk = "ÆÀ´ÜÅå";
+    public static readonly string grouptalk = "íŒ€ë‹¨í†¡";
     public static readonly string mastertalk = "4MasterTalk";
 
-    public static readonly string grouptalkName = "4MasterÆÀ";
+    public static readonly string grouptalkName = "4MasteríŒ€";
 
-    public static readonly string talkable = "¾ÆÆ®´Ô,ÆÀÀå´Ô(±âÈ¹),±è»êÈ£(ÇÃ¹Ö),¹÷Âù¿ì,ÀÌÃ¤¸°(ÇÃ¹Ö),¾ö¸¶,GameMasters,4MasterTalk";
-    public const string me = "¾ÆÆ®´Ô";
+    public static readonly string talkable = "ì•„íŠ¸ë‹˜,íŒ€ì¥ë‹˜(ê¸°íš),ê¹€ì‚°í˜¸(í”Œë°),ë²…ì°¬ìš°,ì´ì±„ë¦°(í”Œë°),ì—„ë§ˆ,GameMasters,4MasterTalk";
+    public const string me = "ì•„íŠ¸ë‹˜";
 
 
-    public const string monologue = "µ¶¹é";
-    public const string choice = "¼±ÅÃÁö";
-    public const string gameStart = "°ÔÀÓ½ÃÀÛ";
+    public const string monologue = "ë…ë°±";
+    public const string choice = "ì„ íƒì§€";
+    public const string gameStart = "ê²Œì„ì‹œì‘";
 }
 
 public class DataManager : MonoBehaviour
@@ -28,18 +28,18 @@ public class DataManager : MonoBehaviour
     private List<List<ChatData>> personalChatList = new List<List<ChatData>>();
 
     public List<string> characterList = new List<string>(){ 
-        "µ¶¹é", "¼±ÅÃÁö", "°ÔÀÓ½ÃÀÛ", "¾ÆÆ®´Ô", "½Ã½ºÅÛ", "ÀÔÀå", "ÅğÀå",
-        "ÆÀÀå´Ô(±âÈ¹)", "±è»êÈ£(ÇÃ¹Ö)", "¹÷Âù¿ì", "ÀÌÃ¤¸°(ÇÃ¹Ö)", "¾ö¸¶", "GameMasters", "4MasterTalk" };
+        "ë…ë°±", "ì„ íƒì§€", "ê²Œì„ì‹œì‘", "ì•„íŠ¸ë‹˜", "ì‹œìŠ¤í…œ", "ì…ì¥", "í‡´ì¥",
+        "íŒ€ì¥ë‹˜(ê¸°íš)", "ê¹€ì‚°í˜¸(í”Œë°)", "ë²…ì°¬ìš°", "ì´ì±„ë¦°(í”Œë°)", "ì—„ë§ˆ", "GameMasters", "4MasterTalk" };
 
     public List<string> chatroomList = new List<string>()
     {
-        "ÆÀ´ÜÅå", "±è»êÈ£(ÇÃ¹Ö)", "¹÷Âù¿ì", "ÀÌÃ¤¸°(ÇÃ¹Ö)", "¾ö¸¶", "4MasterTalk", "GameMasters"
+        "íŒ€ë‹¨í†¡", "ê¹€ì‚°í˜¸(í”Œë°)", "ë²…ì°¬ìš°", "ì´ì±„ë¦°(í”Œë°)", "ì—„ë§ˆ", "4MasterTalk", "GameMasters"
     };
 
     public Dictionary<string, List<string>> noticeList = new Dictionary<string, List<string>>();
     public List<string> endingList = new List<string>();
 
-    // ¿¡ÇÇ¼Òµå-¼±ÅÃÁö¹øÈ£
+    // ì—í”¼ì†Œë“œ-ì„ íƒì§€ë²ˆí˜¸
     public List<List<int[]>> goodChoiceList = new List<List<int[]>>();
     public List<List<int[]>> badChoiceList = new List<List<int[]>>();
 
@@ -108,7 +108,7 @@ public class DataManager : MonoBehaviour
                     data = subChatList[episodeIndex][i];
             }
         }
-        // ÀÌ ÇÔ¼ö¿¡¼­ °³ÀÎÃ¤ÆÃ¹æ µ¥ÀÌÅÍ´Â ¹İÈ¯ÇÒ ¼ö ¾øÀ½(DATATYPEÀ» ÀÌ¿ëÇØ¼­ ¹Ş¾Æ¿Í¾ß ÇÔ)
+        // ì´ í•¨ìˆ˜ì—ì„œ ê°œì¸ì±„íŒ…ë°© ë°ì´í„°ëŠ” ë°˜í™˜í•  ìˆ˜ ì—†ìŒ(DATATYPEì„ ì´ìš©í•´ì„œ ë°›ì•„ì™€ì•¼ í•¨)
 
         return data;
     }
@@ -119,7 +119,7 @@ public class DataManager : MonoBehaviour
         //return chatDataList[chatIndex];
     }
 
-    // ÇØ´ç ¿¡ÇÇ¼ÒµåÀÇ °¡Àå ¸¶Áö¸· ´ëÈ­ °¡Á®¿À±â(±Â¿£µù ¿¡ÇÇ¼Òµå Á¾·á ÈÄ ÀúÀå ÁöÁ¡. ¸¶Áö¸· ¿¡ÇÇ¼Òµå¿¡¼­´Â º¸¿©ÁöÁö ¾ÊÀ½)
+    // í•´ë‹¹ ì—í”¼ì†Œë“œì˜ ê°€ì¥ ë§ˆì§€ë§‰ ëŒ€í™” ê°€ì ¸ì˜¤ê¸°(êµ¿ì—”ë”© ì—í”¼ì†Œë“œ ì¢…ë£Œ í›„ ì €ì¥ ì§€ì . ë§ˆì§€ë§‰ ì—í”¼ì†Œë“œì—ì„œëŠ” ë³´ì—¬ì§€ì§€ ì•ŠìŒ)
     public int GetLastMainChat(int episodeNum)
     {
         int index = 0;
@@ -135,7 +135,7 @@ public class DataManager : MonoBehaviour
         return subChatList[episodeNum];
     }
 
-    // ÇØ´ç ¿¡ÇÇ¼ÒµåÀÇ ¼­ºêÃ¤ÆÃ¹æÀÇ ¸¶Áö¸· Ã¤ÆÃ¸¸À» ¹İÈ¯
+    // í•´ë‹¹ ì—í”¼ì†Œë“œì˜ ì„œë¸Œì±„íŒ…ë°©ì˜ ë§ˆì§€ë§‰ ì±„íŒ…ë§Œì„ ë°˜í™˜
     public List<ChatData> GetLastSubChat(int episodeNum)
     {
         List<ChatData> result = new List<ChatData>();
@@ -161,7 +161,7 @@ public class DataManager : MonoBehaviour
         return personalChatList[episodeNum][0].chatroom;
     }
 
-    // ¿¡ÇÇ¼Òµå ÀüÈ¯ ½Ã ½ÃÀÛÁöÁ¡(°ÔÀÓ½ÃÀÛ Á÷Àü)
+    // ì—í”¼ì†Œë“œ ì „í™˜ ì‹œ ì‹œì‘ì§€ì (ê²Œì„ì‹œì‘ ì§ì „)
     public int GetStartIndex(int episodeNum)
     {
         int index = 0;
@@ -186,7 +186,7 @@ public class DataManager : MonoBehaviour
     }
 
 
-    // ¸¶Áö¸· ºĞ±âÀÎÁö È®ÀÎ
+    // ë§ˆì§€ë§‰ ë¶„ê¸°ì¸ì§€ í™•ì¸
     public bool IsLastDialogueSet(int episodeNum, int index)
     {
         if (episodeNum == 2) return (badChoiceList[episodeNum][badChoiceList[episodeNum].Count - 1][1] < index);
@@ -198,7 +198,7 @@ public class DataManager : MonoBehaviour
         return (index == badChoiceList[episodeNum][badChoiceList[episodeNum].Count - 1][1]);
     }
 
-    // ÇØ´ç Ã¤ÆÃ.index °ªÀÌ ¹üÀ§¿¡ ¼ÓÇÏ´ÂÁö ÆÇ´Ü(¹İ´ë ¹üÀ§¿¡ ¼ÓÇÏÁö ¾Ê¾Æ¾ß ÂüÀ» ¹İÈ¯)
+    // í•´ë‹¹ ì±„íŒ….index ê°’ì´ ë²”ìœ„ì— ì†í•˜ëŠ”ì§€ íŒë‹¨(ë°˜ëŒ€ ë²”ìœ„ì— ì†í•˜ì§€ ì•Šì•„ì•¼ ì°¸ì„ ë°˜í™˜)
     public bool IsInRange(int chatIndex, bool isGoodChoice, int episodeNum, int choiceNum)
     {
         int cnum = choiceNum;
@@ -214,7 +214,7 @@ public class DataManager : MonoBehaviour
         }
     }
 
-    #region µ¥ÀÌÅÍ ·Îµå
+    #region ë°ì´í„° ë¡œë“œ
 
     private void LoadNoticeData(string fileName)
     {
@@ -223,7 +223,7 @@ public class DataManager : MonoBehaviour
 
         for (int i=0; i<chatroomList.Count; i++)
         {
-            string chatroomName = lines[i * 4].Substring(0,lines[i*4].Length-1);
+            string chatroomName = lines[i * 4].Substring(0,lines[i*4].Length);
             List<string> data = new List<string>();
             for(int j=1; j<=3; j++)
             {
@@ -295,7 +295,7 @@ public class DataManager : MonoBehaviour
 
             if (i != 2)
             {
-                //°³ÀÎÅå µû·Î ÀúÀå ÈÄ ¸ŞÀÎ¸®½ºÆ®¿¡¼­ »èÁ¦
+                //ê°œì¸í†¡ ë”°ë¡œ ì €ì¥ í›„ ë©”ì¸ë¦¬ìŠ¤íŠ¸ì—ì„œ ì‚­ì œ
                 for(int j=0; j< mainChatList[i].Count; j++)
                 {
                     personalChatList.Add(new List<ChatData>());
@@ -317,7 +317,7 @@ public class DataManager : MonoBehaviour
             subChatList[i][index].Add(allSubChatList[0]);
             for (int j=1; j<allSubChatList.Count; j++)
             {
-                // Ã¤ÆÃ¹æÀÌ º¯°æµÇ¾úÀ¸¸é ´ÙÀ½ ÀÎµ¦½º¿¡ ÀúÀå
+                // ì±„íŒ…ë°©ì´ ë³€ê²½ë˜ì—ˆìœ¼ë©´ ë‹¤ìŒ ì¸ë±ìŠ¤ì— ì €ì¥
                 if (!allSubChatList[j - 1].chatroom.Equals(allSubChatList[j].chatroom))
                 {
                     subChatList[i].Add(new List<ChatData>());
@@ -327,17 +327,17 @@ public class DataManager : MonoBehaviour
             }
         }
     }
-    #endregion µ¥ÀÌÅÍ ·Îµå --------------------------------------------------------------------------------------
+    #endregion ë°ì´í„° ë¡œë“œ --------------------------------------------------------------------------------------
 }
 
 public class ChatData
 {
-    public int index;           // ÀÎµ¦½º
-    public string chatroom;     // Ã¤ÆÃ¹æ ÀÌ¸§
-    public float dt;            // Ãâ·Â½Ã°£(ÀÌÀü ´ëÈ­ Ãâ·Â dtÃÊ ÈÄ ÀÌ ´ëÈ­ Ãâ·Â)
-    public string date;         // º¸³½ ³¯Â¥
-    public string time;         // º¸³½ ½Ã°£
-    public string character;    // º¸³½ »ç¶÷
-    public string text;         // ´ëÈ­³»¿ë
-    public int enterNum;        // Ã¤ÆÃ¹æ ÀÔ/ÅğÀå ÀÎ¿ø¼ö
+    public int index;           // ì¸ë±ìŠ¤
+    public string chatroom;     // ì±„íŒ…ë°© ì´ë¦„
+    public float dt;            // ì¶œë ¥ì‹œê°„(ì´ì „ ëŒ€í™” ì¶œë ¥ dtì´ˆ í›„ ì´ ëŒ€í™” ì¶œë ¥)
+    public string date;         // ë³´ë‚¸ ë‚ ì§œ
+    public string time;         // ë³´ë‚¸ ì‹œê°„
+    public string character;    // ë³´ë‚¸ ì‚¬ëŒ
+    public string text;         // ëŒ€í™”ë‚´ìš©
+    public int enterNum;        // ì±„íŒ…ë°© ì…/í‡´ì¥ ì¸ì›ìˆ˜
 }
