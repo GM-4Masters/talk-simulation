@@ -19,3 +19,6 @@ This game was launched on Google Play Store(only korea) and <a href = "https://m
 Our team is one of the teams of [_GameMakers_](https://gamemakers.oopy.io/), undergraduate game developer club.
 Although our main project about 2D side-scroll RPG Simulation Game over the past year failed, we decided to commemorate our team by creating this game in a hackathon style.
 The story of the game is based on the our experiences, with some adaptations.
+
+# License of images
+The copyrights of graphic art resource including all images of this repository belongs to the art designer(pobi35739@gmail.com) of 4Masters, and any use, copy or distribution is not permitted without permission of the designer.
