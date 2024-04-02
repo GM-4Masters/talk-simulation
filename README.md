@@ -12,7 +12,7 @@ Player be a art designer of indie game development team which comprises undergra
 Because the leader of the team has very poor understanding of art design and a very big ego, there are many trouble between player and the leader.
 To maintain the team for your carieer, you have to pick the right sentences in the conversation with the team leader to handle the troubles well.
 
-This game was launched on <a href="https://play.google.com/store/apps/details?id=com.FMasters.dbzindev">Google Play Store(only korea)</a> and <a href = "https://m.onestore.co.kr/mobilepoc/apps/appsDetail.omp?prodId=0000760208&scYn=Y">One Store</a>.
+This game was launched on Google Play Store(only korea) and <a href = "https://m.onestore.co.kr/mobilepoc/apps/appsDetail.omp?prodId=0000760208&scYn=Y">One Store</a>, but this game is no longer supported on Google Play Store.
 
 # Team Introduction
 
